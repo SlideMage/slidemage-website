@@ -1,0 +1,19 @@
+# The approved plugins. A plugin is listed only if it has an entry here; adding one is the approval.
+#
+#   id           the plugin's id, as in its plugin.toml; never changes
+#   repository   owner/name on GitHub
+#   maintainer   who answers for the plugin
+#   recommended  listed first in SlideMage and on the website (the registry's decision, not the plugin's)
+#   releases     "all": every release that follows the conventions is listed as it appears;
+#                or a list of approved versions, e.g. ["1.0.0", "1.1.0"]
+#   yanked       versions taken out of the catalogue (a serious bug, a security problem)
+#   hidden       optional; true: only in plugins/index-test.json, never in the real list or on the pages
+
+[[plugin]]
+id = "hello"
+repository = "stpalan/slidemage-plugin-hello"
+maintainer = "Stefan Palan"
+recommended = false
+releases = "all"
+yanked = []
+hidden = true

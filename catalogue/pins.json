@@ -1,0 +1,19 @@
+{
+  "hello": {
+    "0.1.0": {
+      "first_seen": "2026-10-26",
+      "manifest": {
+        "api_version": 1,
+        "license": "GPL-3.0-or-later",
+        "name": "Hello",
+        "needs": [],
+        "network": [],
+        "requires_slidemage": ">=9.0",
+        "summary": "A sample plugin for testing the SlideMage plugin catalogue. It does nothing."
+      },
+      "published": "2026-10-26",
+      "sha256": "a72af2022f7b2a5b161964d6e55376815e76be50c8645e2d02ee2dc7358c00f9",
+      "size": 12357
+    }
+  }
+}

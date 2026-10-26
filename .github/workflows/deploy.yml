@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  workflow_call:   # by build-catalogue.yml after it commits; its pushes don't trigger this workflow
 
 permissions:
   contents: read
@@ -19,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main   # when called after a catalogue commit, the commit that triggered the caller is older
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"

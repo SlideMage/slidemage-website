@@ -1,0 +1,101 @@
+name: Build plugin catalogue
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+    inputs:
+      full_check:
+        description: Re-hash every pinned asset
+        type: boolean
+        default: false
+  pull_request:
+    paths:
+      - registry/**
+      - schema/**
+      - tools/**
+      - tests/**
+      - requirements-catalogue.txt
+
+concurrency:
+  group: catalogue
+  cancel-in-progress: false
+
+jobs:
+  # Pull requests: test the builder and build the catalogue against the proposed registry; publish nothing.
+  check:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-catalogue.txt pytest==8.3.3
+      - run: python -m pytest -q tests
+      - run: python tools/build_catalogue.py --check
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+  build:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-catalogue.txt
+      - name: Build
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          FULL_CHECK: ${{ inputs.full_check }}
+        run: |
+          args="--report report.json"
+          # Pinned assets are re-hashed once a day, at the 03:17 UTC run, or on request.
+          if [ "$FULL_CHECK" = "true" ] || [ "$(date -u +%H)" = "03" ]; then args="$args --full-check"; fi
+          python tools/build_catalogue.py $args
+      - name: Open an issue for every changed asset
+        if: always() && hashFiles('report.json') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          jq -c '.problems[] | select(.kind == "changed")' report.json | while read -r problem; do
+            title=$(jq -r '"Catalogue: \(.plugin) \(.version): published asset changed"' <<< "$problem")
+            open=$(gh issue list --state open --search "in:title \"$title\"" --json title --jq '.[].title')
+            if ! grep -qxF "$title" <<< "$open"; then
+              body=$(jq -r '"\(.message)\n\nThe version is left out of the catalogue. A published asset must never change; a fix is a new version. If the change is intended, yank the version in registry/plugins.toml and close this issue."' <<< "$problem")
+              gh issue create --title "$title" --body "$body"
+            fi
+          done
+      - name: Commit
+        id: commit
+        run: |
+          git add catalogue docs/plugins
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Catalogue update"
+          git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.changed == 'true'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy.yml
