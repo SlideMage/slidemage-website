@@ -21,6 +21,10 @@ SlideMage reads `/plugins/index.json`; `/plugins/index-test.json` adds the hidde
 - `tools/build_catalogue.py`: builds both catalogues from the plugins' GitHub releases, pins every published
   asset's SHA-256 in `catalogue/pins.json` and copies the icons. Validated against
   `schema/plugins-index.schema.json`.
+- `tools/plugin_pages.py`: the listed plugins' pages (`docs/plugins/<id>/index.md`) and the cards between the
+  markers on `docs/plugins/index.md`, from each plugin's README, CHANGELOG and `website/screenshots/` at its
+  newest release. Plugin texts are defused first: raw HTML and attribute lists are escaped, unsafe links
+  removed, images reduced to their alt text. Generated files are overwritten; don't edit them by hand.
 - `.github/workflows/build-catalogue.yml`: runs the builder hourly (and on "Run workflow"), commits and deploys
   when something changed, opens an issue when a published asset changes, and keeps the schedule alive with a
   monthly heartbeat (`catalogue/last-run.txt`). On pull requests it runs the tests and builds against the

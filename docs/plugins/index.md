@@ -4,10 +4,12 @@ Plugins add features to SlideMage. SlideMage works without any of them; install 
 
 ## Available plugins
 
+<!-- catalogue:cards:start -->
 !!! note "No plugins listed yet"
     The first plugins are in preparation: **Ollama** (local AI models), **Claude** (AI in the cloud) and
     **CampusOnline** (course links and admin slides for CAMPUSonline courses). They'll be listed here once
     they're released.
+<!-- catalogue:cards:end -->
 
 ## Local or cloud AI?
 

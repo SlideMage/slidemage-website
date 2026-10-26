@@ -33,11 +33,18 @@ def smplugin(pid="hello", version="0.1.0", **changes):
     return buffer.getvalue()
 
 
+README = "# Hello\n\nSays hello.\n\n## Development\n\nBuild notes.\n"
+CHANGELOG = "# History\n\nv0.1.0 (2026-10-26, first release): The first one.\n"
+
+
 class FakeGitHub:
     def __init__(self):
         self.repos, self.files, self.urls = {}, {}, {}
 
-    def release(self, repo, tag, assets, draft=False, prerelease=False):
+    def release(self, repo, tag, assets, draft=False, prerelease=False, material=True):
+        if material:
+            self.files[(repo, tag, "README.md")] = README.encode()
+            self.files[(repo, tag, "CHANGELOG.md")] = CHANGELOG.encode()
         entries = []
         for name, data in assets.items():
             url = f"https://github.com/{repo}/releases/download/{tag}/{name}"
@@ -58,6 +65,11 @@ class FakeGitHub:
     def file_at(self, repo, tag, path):
         return self.files.get((repo, tag, path))
 
+    def list_dir(self, repo, tag, path):
+        prefix = f"{path}/"
+        return [{"name": p[len(prefix):], "size": len(data)} for (r, t, p), data in self.files.items()
+                if r == repo and t == tag and p.startswith(prefix) and "/" not in p[len(prefix):]]
+
 
 @pytest.fixture
 def site(tmp_path, monkeypatch):
@@ -65,6 +77,7 @@ def site(tmp_path, monkeypatch):
         monkeypatch.setattr(bc, name, tmp_path / getattr(bc, name).relative_to(ROOT))
     (tmp_path / "registry").mkdir()
     (tmp_path / "docs" / "plugins").mkdir(parents=True)
+    shutil.copy(ROOT / "docs" / "plugins" / "index.md", tmp_path / "docs" / "plugins" / "index.md")
     (tmp_path / "mkdocs.yml").write_text(f"site_name: x\nsite_url: {SITE}\n")
     return tmp_path
 
@@ -203,3 +216,85 @@ def test_unsafe_or_small_icons_are_refused():
     png = b"\x89PNG\r\n\x1a\n" + b"\0" * 8 + (64).to_bytes(4, "big") * 2
     assert "128" in bc.check_icon("website/icon.png", png)
     assert bc.check_icon("website/icon.svg", ICON) is None
+
+
+def page_of(site, pid="hello"):
+    return (site / "docs" / "plugins" / pid / "index.md").read_text(encoding="utf-8")
+
+
+def test_a_listed_plugin_gets_a_page_and_a_card(site):
+    gh = FakeGitHub()
+    gh.release("o/hello", "v0.1.0", {"hello-0.1.0.smplugin": smplugin(network=["Example server"])})
+    gh.files[("o/hello", "v0.1.0", "website/icon.svg")] = ICON
+    registry(site, HELLO)
+    assert bc.main([], gh) == 0
+    page = page_of(site)
+    assert page.startswith("# Hello\n")
+    assert "Says hello." in page and "Build notes" not in page          # README cut at ## Development
+    assert "- Example server" in page and "What leaves your computer" in page
+    assert "### v0.1.0" in page and "The first one." in page
+    assert "| 0.1.0 | &gt;=9.0 | 2026-10-26 |" in page
+    index = (site / "docs" / "plugins" / "index.md").read_text(encoding="utf-8")
+    assert "[Hello](hello/index.md)" in index and "No plugins listed yet" not in index
+    assert "hello/icon.svg" in index
+
+
+def test_hidden_plugins_get_no_page_or_card(site):
+    gh = FakeGitHub()
+    gh.release("o/hello", "v0.1.0", {"hello-0.1.0.smplugin": smplugin()})
+    registry(site, HELLO + "hidden = true\n")
+    assert bc.main([], gh) == 0
+    assert not (site / "docs" / "plugins" / "hello" / "index.md").exists()
+    assert "No plugins listed yet" in (site / "docs" / "plugins" / "index.md").read_text(encoding="utf-8")
+
+
+def test_a_release_without_readme_or_changelog_is_refused(site):
+    gh = FakeGitHub()
+    gh.release("o/hello", "v0.1.0", {"hello-0.1.0.smplugin": smplugin()}, material=False)
+    gh.files[("o/hello", "v0.1.0", "README.md")] = README.encode()
+    registry(site, HELLO)
+    assert bc.main([], gh) == 0
+    assert catalogue(site)["plugins"] == []
+
+
+def test_screenshots_are_copied_in_name_order_at_most_six_and_small(site):
+    gh = FakeGitHub()
+    gh.release("o/hello", "v0.1.0", {"hello-0.1.0.smplugin": smplugin()})
+    png = b"\x89PNG\r\n\x1a\n" + b"\0" * 100
+    for name in ("b.png", "a.png", "c.png", "d.png", "e.png", "f.png", "g.png"):
+        gh.files[("o/hello", "v0.1.0", f"website/screenshots/{name}")] = png
+    gh.files[("o/hello", "v0.1.0", "website/screenshots/big.png")] = png + b"\0" * 1_000_000
+    gh.files[("o/hello", "v0.1.0", "website/screenshots/fake.png")] = b"GIF89a"
+    registry(site, HELLO)
+    assert bc.main([], gh) == 0
+    shots = sorted(p.name for p in (site / "docs" / "plugins" / "hello" / "screenshots").iterdir())
+    assert shots == ["a.png", "b.png", "c.png", "d.png", "e.png", "f.png"]
+    assert page_of(site).index("screenshots/a.png") < page_of(site).index("screenshots/b.png")
+
+
+def test_a_plugin_no_longer_listed_loses_its_page(site):
+    gh = FakeGitHub()
+    gh.release("o/hello", "v0.1.0", {"hello-0.1.0.smplugin": smplugin()})
+    registry(site, HELLO)
+    assert bc.main([], gh) == 0
+    registry(site, HELLO.replace('yanked = []', 'yanked = ["0.1.0"]'))
+    assert bc.main([], gh) == 0
+    assert not (site / "docs" / "plugins" / "hello" / "index.md").exists()
+
+
+def test_third_party_markdown_is_defused():
+    text = bc.pages.defuse(
+        "# Title\n<script>alert(1)</script>\nA [bad](javascript:alert(1)) and [doc](docs/x.md) and "
+        "[ok](https://a.org)\n![shot](img.png)\nText{: onclick=\"x\" }\n`<kept>` code\n"
+        "```python {onclick=x}\n<b>in code</b>\n```\n[ref]: javascript:evil\n", "o/p", "v1.0.0")
+    assert "<script" not in text and "&lt;script&gt;" in text
+    assert "javascript:" not in text
+    assert "(https://github.com/o/p/blob/v1.0.0/docs/x.md)" in text and "(https://a.org)" in text
+    assert "*shot*" in text and "img.png" not in text
+    assert "{:" not in text and "&#123;: onclick" in text
+    assert "`<kept>`" in text and "<b>in code</b>" in text
+    assert "```python\n" in text and "## Title" in text
+
+
+def test_plugin_fields_cannot_inject_markup():
+    assert bc.pages.inline("<img src=x> [a](b) {: x}") == r"&lt;img src=x&gt; \[a\](b) &#123;: x&#125;"
