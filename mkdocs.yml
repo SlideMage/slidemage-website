@@ -1,0 +1,45 @@
+site_name: SlideMage
+site_description: LaTeX/beamer slides for research and teaching, with a desktop app that manages them.
+site_url: https://stpalan.github.io/slidemage-website/
+repo_url: https://github.com/stpalan/slidemage-website
+repo_name: slidemage-website
+edit_uri: ""
+copyright: Stefan Palan, Jürgen Fleiß · Content under CC BY-SA 4.0
+
+theme:
+  name: material
+  logo: assets/logo.svg
+  favicon: assets/logo.svg
+  features:
+    - navigation.tabs
+    - navigation.top
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Light mode
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Download: download.md
+  - Plugins: plugins/index.md
+  - About: about.md
