@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Thanks for writing a plugin. Before you submit, please check that the repository and its release
-        follow the [conventions](https://stpalan.github.io/slidemage-website/plugins/submit/). You can also
+        follow the [conventions](https://slidemage.org/plugins/submit/). You can also
         open a pull request that adds your plugin to `registry/plugins.toml` yourself; this form is for
         authors who'd rather not.
   - type: input

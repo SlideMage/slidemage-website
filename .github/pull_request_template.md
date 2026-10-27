@@ -1,6 +1,6 @@
 <!--
 Adding or changing a plugin in registry/plugins.toml? Fill in the checklist below; the conventions are on
-https://stpalan.github.io/slidemage-website/plugins/submit/.
+https://slidemage.org/plugins/submit/.
 Any other change: delete everything below and say what the change does and why.
 -->
 

@@ -1,6 +1,6 @@
 site_name: SlideMage
 site_description: LaTeX/beamer slides for research and teaching, with a desktop app that manages them.
-site_url: https://stpalan.github.io/slidemage-website/
+site_url: https://slidemage.org/
 repo_url: https://github.com/stpalan/slidemage-website
 repo_name: slidemage-website
 edit_uri: ""
