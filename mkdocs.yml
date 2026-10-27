@@ -43,5 +43,7 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Download: download.md
-  - Plugins: plugins/index.md
+  - Plugins:
+      - plugins/index.md
+      - Submit a plugin: plugins/submit.md
   - About: about.md

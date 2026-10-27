@@ -25,6 +25,9 @@ SlideMage reads `/plugins/index.json`; `/plugins/index-test.json` adds the hidde
   markers on `docs/plugins/index.md`, from each plugin's README, CHANGELOG and `website/screenshots/` at its
   newest release. Plugin texts are defused first: raw HTML and attribute lists are escaped, unsafe links
   removed, images reduced to their alt text. Generated files are overwritten; don't edit them by hand.
+- `docs/plugins/submit.md` (`/plugins/submit/`): the conventions and the review for plugin authors, with
+  the pull request template (`.github/pull_request_template.md`) and the "Submit a plugin" issue form
+  (`.github/ISSUE_TEMPLATE/submit-plugin.yml`). The id `submit` is reserved for it.
 - `.github/workflows/build-catalogue.yml`: runs the builder hourly (and on "Run workflow"), commits and deploys
   when something changed, opens an issue when a published asset changes, and keeps the schedule alive with a
   monthly heartbeat (`catalogue/last-run.txt`). On pull requests it runs the tests and builds against the

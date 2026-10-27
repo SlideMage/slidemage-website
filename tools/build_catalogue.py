@@ -42,6 +42,7 @@ OUT = ROOT / "docs" / "plugins"
 MKDOCS = ROOT / "mkdocs.yml"
 
 ID_RE = re.compile(r"^[a-z][a-z0-9-]{1,31}$")
+RESERVED_IDS = {"submit"}   # docs/plugins/submit.md is /plugins/submit/, where a plugin's page would go
 VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
 TAG_RE = re.compile(r"^v(\d+\.\d+\.\d+)$")
 RANGE_RE = re.compile(r"^(>=|<=|==|<|>)\s*\d+(\.\d+){0,2}(\s*,\s*(>=|<=|==|<|>)\s*\d+(\.\d+){0,2})*$")
@@ -137,6 +138,8 @@ def load_registry(text: str) -> list[dict]:
         pid = entry.get("id")
         if not isinstance(pid, str) or not ID_RE.match(pid):
             raise RegistryError(f"invalid id {pid!r}")
+        if pid in RESERVED_IDS:
+            raise RegistryError(f"{pid}: the id is reserved for a page of the website")
         if pid in seen:
             raise RegistryError(f"{pid}: listed twice")
         seen.add(pid)

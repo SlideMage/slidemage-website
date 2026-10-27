@@ -29,4 +29,5 @@ picks which one is used.
 
 ## Writing a plugin
 
-How to submit a plugin for this list will be described here.
+Anyone can write a plugin. Plugins listed here have been reviewed; [Submit a plugin](submit.md)
+describes what a plugin repository needs and how the review works.

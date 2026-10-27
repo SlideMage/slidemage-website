@@ -203,6 +203,7 @@ def test_check_mode_writes_nothing_and_fails_for_a_broken_new_entry(site):
 @pytest.mark.parametrize("text", [
     HELLO + HELLO,                                              # listed twice
     HELLO.replace('"hello"', '"Hello"'),                        # invalid id
+    HELLO.replace('id = "hello"', 'id = "submit"'),             # reserved for /plugins/submit/
     HELLO.replace('releases = "all"', 'releases = "some"'),
     HELLO + "colour = 1\n",                                     # unknown key
 ])

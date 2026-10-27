@@ -1,0 +1,76 @@
+name: Submit a plugin
+description: Ask for a plugin, or a new version of one, to be listed in SlideMage and on the website.
+title: "Submit a plugin: "
+labels: ["plugin submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for writing a plugin. Before you submit, please check that the repository and its release
+        follow the [conventions](https://stpalan.github.io/slidemage-website/plugins/submit/). You can also
+        open a pull request that adds your plugin to `registry/plugins.toml` yourself; this form is for
+        authors who'd rather not.
+  - type: input
+    id: id
+    attributes:
+      label: Plugin id
+      description: As in `plugin.toml`. Lowercase letters, digits and hyphens; it never changes.
+      placeholder: my-plugin
+    validations:
+      required: true
+  - type: input
+    id: repository
+    attributes:
+      label: Repository
+      description: The plugin's public GitHub repository.
+      placeholder: https://github.com/you/slidemage-plugin-my-plugin
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions to approve
+      description: Released versions, comma-separated. Drafts and pre-releases are never listed.
+      placeholder: 1.0.0
+    validations:
+      required: true
+  - type: input
+    id: maintainer
+    attributes:
+      label: Maintainer
+      description: The name shown with the plugin, of the person who answers for it.
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What the plugin does
+      description: A few sentences, for the reviewer. The plugin's page is built from its README.
+    validations:
+      required: true
+  - type: textarea
+    id: network
+    attributes:
+      label: What it contacts on the network
+      description: Every server or service the code talks to, and what it sends. "Nothing" if it contacts nothing.
+    validations:
+      required: true
+  - type: checkboxes
+    id: conventions
+    attributes:
+      label: Conventions
+      options:
+        - label: The release is tagged `v<version>` and has one asset `<id>-<version>.smplugin` with `plugin.toml` at its root.
+          required: true
+        - label: "`README.md` and `CHANGELOG.md` are in the repository at the release's tag."
+          required: true
+        - label: The license is GPL-compatible and `LICENSE` is in the asset.
+          required: true
+        - label: The code is pure Python and imports only `slidemage.plugin_api`, the standard library, PySide6 and its own modules.
+          required: true
+        - label: "`network` and `needs` in `plugin.toml` are complete."
+          required: true
+        - label: Issues are open on the repository, so users can reach me.
+          required: true
+        - label: I'll never replace a published asset; a fix is a new version.
+          required: true
