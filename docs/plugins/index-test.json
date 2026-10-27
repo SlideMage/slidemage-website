@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated": "2026-10-27T06:24:11Z",
+  "generated": "2026-10-27T06:27:06Z",
   "plugins_page": "https://stpalan.github.io/slidemage-website/plugins/",
   "plugins": [
     {
@@ -16,16 +16,6 @@
       "needs": [],
       "network": [],
       "releases": [
-        {
-          "version": "0.2.0",
-          "api_version": 1,
-          "requires_slidemage": ">=9.0",
-          "url": "https://github.com/stpalan/slidemage-plugin-hello/releases/download/v0.2.0/hello-0.2.0.smplugin",
-          "sha256": "5f2de2dfbececb104edfd046103a145efe21df23e902b84b2cbcfc35a92d14a7",
-          "size": 12448,
-          "published": "2026-10-27",
-          "notes_url": "https://github.com/stpalan/slidemage-plugin-hello/releases/tag/v0.2.0"
-        },
         {
           "version": "0.1.0",
           "api_version": 1,
