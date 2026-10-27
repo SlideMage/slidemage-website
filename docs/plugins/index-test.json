@@ -1,15 +1,15 @@
 {
   "schema": 1,
-  "generated": "2026-10-27T06:27:06Z",
-  "plugins_page": "https://stpalan.github.io/slidemage-website/plugins/",
+  "generated": "2026-10-27T11:45:44Z",
+  "plugins_page": "https://slidemage.org/plugins/",
   "plugins": [
     {
       "id": "hello",
       "name": "Hello",
       "summary": "A sample plugin for testing the SlideMage plugin catalogue. It does nothing.",
-      "homepage": "https://stpalan.github.io/slidemage-website/plugins/hello/",
+      "homepage": "https://slidemage.org/plugins/hello/",
       "source": "https://github.com/stpalan/slidemage-plugin-hello",
-      "icon": "https://stpalan.github.io/slidemage-website/plugins/hello/icon.svg",
+      "icon": "https://slidemage.org/plugins/hello/icon.svg",
       "license": "GPL-3.0-or-later",
       "maintainer": "Stefan Palan",
       "recommended": false,
