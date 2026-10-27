@@ -20,7 +20,8 @@ SlideMage reads `/plugins/index.json`; `/plugins/index-test.json` adds the hidde
 - `registry/plugins.toml`: the approved plugins. Adding an entry, by a reviewed pull request, is the approval.
 - `tools/build_catalogue.py`: builds both catalogues from the plugins' GitHub releases, pins every published
   asset's SHA-256 in `catalogue/pins.json` and copies the icons. Validated against
-  `schema/plugins-index.schema.json`.
+  `schema/plugins-index.schema.json`, which the deploy publishes at its `$id`
+  (`https://slidemage.org/schema/plugins-index-1.json`).
 - `tools/plugin_pages.py`: the listed plugins' pages (`docs/plugins/<id>/index.md`) and the cards between the
   markers on `docs/plugins/index.md`, from each plugin's README, CHANGELOG and `website/screenshots/` at its
   newest release. Plugin texts are defused first: raw HTML and attribute lists are escaped, unsafe links
