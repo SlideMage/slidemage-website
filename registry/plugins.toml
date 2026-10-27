@@ -15,5 +15,5 @@ repository = "stpalan/slidemage-plugin-hello"
 maintainer = "Stefan Palan"
 recommended = false
 releases = "all"
-yanked = []
+yanked = ["0.2.0"]
 hidden = true
