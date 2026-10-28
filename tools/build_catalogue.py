@@ -42,7 +42,14 @@ OUT = ROOT / "docs" / "plugins"
 MKDOCS = ROOT / "mkdocs.yml"
 
 ID_RE = re.compile(r"^[a-z][a-z0-9-]{1,31}$")
-RESERVED_IDS = {"submit"}   # docs/plugins/submit.md is /plugins/submit/, where a plugin's page would go
+# Ids no plugin may have, and why. "submit": docs/plugins/submit.md is /plugins/submit/, where that plugin's page
+# would go. The others are folders and files SlideMage keeps next to installed plugins (RESERVED_IDS in
+# SlideMage's src/slidemage/plugins/manifest.py, the ones a valid id can spell); the app refuses them.
+RESERVED_IDS = {
+    "submit": "a page of the website",
+    **dict.fromkeys(("settings", "secrets", "pending", "staging", "old", "state", "catalogue",
+                     "last-update-check", "offer-seen", "migrations-seen"), "SlideMage's own storage"),
+}
 VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
 TAG_RE = re.compile(r"^v(\d+\.\d+\.\d+)$")
 RANGE_RE = re.compile(r"^(>=|<=|==|<|>)\s*\d+(\.\d+){0,2}(\s*,\s*(>=|<=|==|<|>)\s*\d+(\.\d+){0,2})*$")
@@ -139,7 +146,7 @@ def load_registry(text: str) -> list[dict]:
         if not isinstance(pid, str) or not ID_RE.match(pid):
             raise RegistryError(f"invalid id {pid!r}")
         if pid in RESERVED_IDS:
-            raise RegistryError(f"{pid}: the id is reserved for a page of the website")
+            raise RegistryError(f"{pid}: the id is reserved for {RESERVED_IDS[pid]}")
         if pid in seen:
             raise RegistryError(f"{pid}: listed twice")
         seen.add(pid)

@@ -7,4 +7,4 @@ The app is free software under the GPL-3.0-or-later. Its LaTeX framework started
 
 The content of this website is licensed under
 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). Its source is on
-[GitHub](https://github.com/stpalan/slidemage-website).
+[GitHub](https://github.com/SlideMage/slidemage-website).

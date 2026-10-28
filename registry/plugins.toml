@@ -11,7 +11,7 @@
 
 [[plugin]]
 id = "hello"
-repository = "stpalan/slidemage-plugin-hello"
+repository = "SlideMage/slidemage-plugin-hello"
 maintainer = "Stefan Palan"
 recommended = false
 releases = "all"

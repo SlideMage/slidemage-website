@@ -11,7 +11,7 @@ needs a short review. This page describes what a plugin repository must look lik
 
 Each plugin has its own public GitHub repository, named `slidemage-plugin-<id>` by convention, on its
 author's account. The easiest start is the
-[plugin template](https://github.com/stpalan/slidemage-plugin-template): it has the layout below and a
+[plugin template](https://github.com/SlideMage/slidemage-plugin-template): it has the layout below and a
 `build.py` that builds the release asset reproducibly.
 
 ```
@@ -43,6 +43,9 @@ slidemage-plugin-<id>/
 
 `summary`, `needs` and `network` are shown in SlideMage before a user installs the plugin, so keep them
 accurate and short (at most 120 characters per line).
+
+A few ids are taken: `submit` by this page, and `settings`, `secrets`, `pending`, `staging`, `old`, `state`,
+`catalogue`, `last-update-check`, `offer-seen` and `migrations-seen` by SlideMage itself.
 
 ## Releases
 
@@ -89,7 +92,7 @@ A reviewer checks that:
 ## How to submit
 
 Either way, the review happens in a pull request to the
-[website repository](https://github.com/stpalan/slidemage-website); merging it is the approval.
+[website repository](https://github.com/SlideMage/slidemage-website); merging it is the approval.
 
 - **A pull request:** add an entry to `registry/plugins.toml` and fill in the checklist the pull request
   shows. Its checks build the catalogue with your entry, so a problem shows up before the review.
@@ -104,7 +107,7 @@ Either way, the review happens in a pull request to the
     yanked = []
     ```
 
-- **The form:** [submit a plugin](https://github.com/stpalan/slidemage-website/issues/new?template=submit-plugin.yml)
+- **The form:** [submit a plugin](https://github.com/SlideMage/slidemage-website/issues/new?template=submit-plugin.yml)
   as an issue, and the pull request is made for you.
 
 A plugin starts with a list of approved versions. Each new version is a one-line pull request that adds it
@@ -113,4 +116,4 @@ later have every new release listed automatically.
 
 Once approved, a version appears in the catalogue within the hour. If a listed version turns out to have a
 serious bug or a security problem, it is taken out of the catalogue ("yanked"); report such problems as an
-[issue](https://github.com/stpalan/slidemage-website/issues).
+[issue](https://github.com/SlideMage/slidemage-website/issues).

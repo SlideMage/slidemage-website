@@ -204,6 +204,7 @@ def test_check_mode_writes_nothing_and_fails_for_a_broken_new_entry(site):
     HELLO + HELLO,                                              # listed twice
     HELLO.replace('"hello"', '"Hello"'),                        # invalid id
     HELLO.replace('id = "hello"', 'id = "submit"'),             # reserved for /plugins/submit/
+    HELLO.replace('id = "hello"', 'id = "settings"'),           # reserved for SlideMage's storage
     HELLO.replace('releases = "all"', 'releases = "some"'),
     HELLO + "colour = 1\n",                                     # unknown key
 ])
