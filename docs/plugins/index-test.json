@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated": "2026-10-28T08:36:51Z",
+  "generated": "2026-10-28T13:40:48Z",
   "plugins_page": "https://slidemage.org/plugins/",
   "plugins": [
     {
@@ -8,7 +8,7 @@
       "name": "Hello",
       "summary": "A sample plugin for testing the SlideMage plugin catalogue. It does nothing.",
       "homepage": "https://slidemage.org/plugins/hello/",
-      "source": "https://github.com/stpalan/slidemage-plugin-hello",
+      "source": "https://github.com/SlideMage/slidemage-plugin-hello",
       "icon": "https://slidemage.org/plugins/hello/icon.svg",
       "license": "GPL-3.0-or-later",
       "maintainer": "Stefan Palan",
