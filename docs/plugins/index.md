@@ -14,7 +14,7 @@ Plugins add features to SlideMage. SlideMage works without any of them; install 
     **Needs:** Claude Code installed and signed in, or an Anthropic API key  
     **Contacts:** Anthropic: api.anthropic.com and Claude Code's own connections
 
-    Version 1.0.0 · SlideMage &gt;=9.1 · by Jürgen Fleiß
+    Version 1.0.1 · SlideMage &gt;=9.1 · by Jürgen Fleiß
 
 -   ![](ollama/icon.svg){ width="40" } **[Ollama](ollama/index.md)** · *Recommended*
 

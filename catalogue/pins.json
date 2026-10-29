@@ -39,6 +39,25 @@
       "published": "2026-10-29",
       "sha256": "bf357e40cd59ec02fb36205679ff7e861be252169d072b7fd26f2b2ae3151450",
       "size": 59636
+    },
+    "1.0.1": {
+      "first_seen": "2026-10-29",
+      "manifest": {
+        "api_version": 1,
+        "license": "GPL-3.0-or-later",
+        "name": "Claude",
+        "needs": [
+          "Claude Code installed and signed in, or an Anthropic API key"
+        ],
+        "network": [
+          "Anthropic: api.anthropic.com and Claude Code's own connections"
+        ],
+        "requires_slidemage": ">=9.1",
+        "summary": "Claude Code and the Anthropic API as SlideMage's cloud AI."
+      },
+      "published": "2026-10-29",
+      "sha256": "ed0f66b09f7dcf9d5726860d311c4e46f4e8f2d6cf43d737633795f65d9e6545",
+      "size": 59617
     }
   },
   "hello": {
