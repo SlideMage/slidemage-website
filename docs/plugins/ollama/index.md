@@ -17,7 +17,7 @@ Works with SlideMage &gt;=9.1.
 
 In SlideMage: **Settings → Plugins** or **Help → Plugins…**.
 
-By hand: download [Ollama 1.0.0](https://github.com/SlideMage/slidemage-plugin-ollama/releases/download/v1.0.0/ollama-1.0.0.smplugin) (31 kB), then choose **Settings → Plugins → Install from file…**.
+By hand: download [Ollama 1.0.1](https://github.com/SlideMage/slidemage-plugin-ollama/releases/download/v1.0.1/ollama-1.0.1.smplugin) (31 kB), then choose **Settings → Plugins → Install from file…**.
 
 ## About this plugin
 
@@ -45,9 +45,16 @@ and `localhost` always connect directly. An HTTP proxy can see requests sent to 
 
 | Version | SlideMage | Released | Download |
 |---|---|---|---|
+| 1.0.1 | &gt;=9.1 | 2026-10-29 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-ollama/releases/download/v1.0.1/ollama-1.0.1.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-ollama/releases/tag/v1.0.1) |
 | 1.0.0 | &gt;=9.1 | 2026-10-29 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-ollama/releases/download/v1.0.0/ollama-1.0.0.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-ollama/releases/tag/v1.0.0) |
 
 ## Changelog
+
+### v1.0.1
+
+*2026-10-29 · website icon*
+
+The plugin has its own icon on the SlideMage website and in the plugin list, a stylized llama head with an AI sparkle; the plugin itself is unchanged.
 
 ### v1.0.0
 

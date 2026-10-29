@@ -23,7 +23,7 @@ Plugins add features to SlideMage. SlideMage works without any of them; install 
     **Needs:** Ollama installed  
     **Contacts:** The Ollama server you set (by default on this computer)
 
-    Version 1.0.0 · SlideMage &gt;=9.1 · by Stefan Palan
+    Version 1.0.1 · SlideMage &gt;=9.1 · by Stefan Palan
 
 -   ![](campusonline/icon.svg){ width="40" } **[CampusOnline](campusonline/index.md)**
 
