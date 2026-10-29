@@ -17,3 +17,27 @@ recommended = false
 releases = "all"
 yanked = ["0.2.0"]
 hidden = true
+
+[[plugin]]
+id = "claude"
+repository = "SlideMage/slidemage-plugin-claude"
+maintainer = "Jürgen Fleiß"
+recommended = true
+releases = "all"
+yanked = []
+
+[[plugin]]
+id = "ollama"
+repository = "SlideMage/slidemage-plugin-ollama"
+maintainer = "Stefan Palan"
+recommended = true
+releases = "all"
+yanked = []
+
+[[plugin]]
+id = "campusonline"
+repository = "SlideMage/slidemage-plugin-campusonline"
+maintainer = "Jürgen Fleiß"
+recommended = false
+releases = "all"
+yanked = []
