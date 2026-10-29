@@ -1,8 +1,95 @@
 {
   "schema": 1,
-  "generated": "2026-10-28T13:40:48Z",
+  "generated": "2026-10-29T08:12:01Z",
   "plugins_page": "https://slidemage.org/plugins/",
   "plugins": [
+    {
+      "id": "claude",
+      "name": "Claude",
+      "summary": "Claude Code and the Anthropic API as SlideMage's cloud AI.",
+      "homepage": "https://slidemage.org/plugins/claude/",
+      "source": "https://github.com/SlideMage/slidemage-plugin-claude",
+      "icon": "https://slidemage.org/plugins/claude/icon.svg",
+      "license": "GPL-3.0-or-later",
+      "maintainer": "Jürgen Fleiß",
+      "recommended": true,
+      "needs": [
+        "Claude Code installed and signed in, or an Anthropic API key"
+      ],
+      "network": [
+        "Anthropic: api.anthropic.com and Claude Code's own connections"
+      ],
+      "releases": [
+        {
+          "version": "1.0.0",
+          "api_version": 1,
+          "requires_slidemage": ">=9.1",
+          "url": "https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.0.0/claude-1.0.0.smplugin",
+          "sha256": "bf357e40cd59ec02fb36205679ff7e861be252169d072b7fd26f2b2ae3151450",
+          "size": 59636,
+          "published": "2026-10-29",
+          "notes_url": "https://github.com/SlideMage/slidemage-plugin-claude/releases/tag/v1.0.0"
+        }
+      ]
+    },
+    {
+      "id": "ollama",
+      "name": "Ollama",
+      "summary": "Local AI models through Ollama: nothing leaves your computer.",
+      "homepage": "https://slidemage.org/plugins/ollama/",
+      "source": "https://github.com/SlideMage/slidemage-plugin-ollama",
+      "icon": "https://slidemage.org/plugins/ollama/icon.svg",
+      "license": "GPL-3.0-or-later",
+      "maintainer": "Stefan Palan",
+      "recommended": true,
+      "needs": [
+        "Ollama installed"
+      ],
+      "network": [
+        "The Ollama server you set (by default on this computer)"
+      ],
+      "releases": [
+        {
+          "version": "1.0.0",
+          "api_version": 1,
+          "requires_slidemage": ">=9.1",
+          "url": "https://github.com/SlideMage/slidemage-plugin-ollama/releases/download/v1.0.0/ollama-1.0.0.smplugin",
+          "sha256": "1a571f257d7d2ed598b354ca146750c3f21797b5b8732c89523d8b18f3df6d0d",
+          "size": 31574,
+          "published": "2026-10-29",
+          "notes_url": "https://github.com/SlideMage/slidemage-plugin-ollama/releases/tag/v1.0.0"
+        }
+      ]
+    },
+    {
+      "id": "campusonline",
+      "name": "CampusOnline",
+      "summary": "Course links, admin slides and session-aware rendering for CAMPUSonline courses.",
+      "homepage": "https://slidemage.org/plugins/campusonline/",
+      "source": "https://github.com/SlideMage/slidemage-plugin-campusonline",
+      "icon": "https://slidemage.org/plugins/campusonline/icon.svg",
+      "license": "GPL-3.0-or-later",
+      "maintainer": "Jürgen Fleiß",
+      "recommended": false,
+      "needs": [
+        "A CAMPUSonline course page"
+      ],
+      "network": [
+        "The CAMPUSonline server of the linked course"
+      ],
+      "releases": [
+        {
+          "version": "1.0.0",
+          "api_version": 1,
+          "requires_slidemage": ">=9.0",
+          "url": "https://github.com/SlideMage/slidemage-plugin-campusonline/releases/download/v1.0.0/campusonline-1.0.0.smplugin",
+          "sha256": "7d9ca181cd4e7571888c92f8094faf7beb9213854457de0bba39d0512c498fe6",
+          "size": 32765,
+          "published": "2026-10-29",
+          "notes_url": "https://github.com/SlideMage/slidemage-plugin-campusonline/releases/tag/v1.0.0"
+        }
+      ]
+    },
     {
       "id": "hello",
       "name": "Hello",

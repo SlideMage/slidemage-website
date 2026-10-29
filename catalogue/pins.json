@@ -1,4 +1,46 @@
 {
+  "campusonline": {
+    "1.0.0": {
+      "first_seen": "2026-10-29",
+      "manifest": {
+        "api_version": 1,
+        "license": "GPL-3.0-or-later",
+        "name": "CampusOnline",
+        "needs": [
+          "A CAMPUSonline course page"
+        ],
+        "network": [
+          "The CAMPUSonline server of the linked course"
+        ],
+        "requires_slidemage": ">=9.0",
+        "summary": "Course links, admin slides and session-aware rendering for CAMPUSonline courses."
+      },
+      "published": "2026-10-29",
+      "sha256": "7d9ca181cd4e7571888c92f8094faf7beb9213854457de0bba39d0512c498fe6",
+      "size": 32765
+    }
+  },
+  "claude": {
+    "1.0.0": {
+      "first_seen": "2026-10-29",
+      "manifest": {
+        "api_version": 1,
+        "license": "GPL-3.0-or-later",
+        "name": "Claude",
+        "needs": [
+          "Claude Code installed and signed in, or an Anthropic API key"
+        ],
+        "network": [
+          "Anthropic: api.anthropic.com and Claude Code's own connections"
+        ],
+        "requires_slidemage": ">=9.1",
+        "summary": "Claude Code and the Anthropic API as SlideMage's cloud AI."
+      },
+      "published": "2026-10-29",
+      "sha256": "bf357e40cd59ec02fb36205679ff7e861be252169d072b7fd26f2b2ae3151450",
+      "size": 59636
+    }
+  },
   "hello": {
     "0.1.0": {
       "first_seen": "2026-10-26",
@@ -29,6 +71,27 @@
       "published": "2026-10-27",
       "sha256": "5f2de2dfbececb104edfd046103a145efe21df23e902b84b2cbcfc35a92d14a7",
       "size": 12448
+    }
+  },
+  "ollama": {
+    "1.0.0": {
+      "first_seen": "2026-10-29",
+      "manifest": {
+        "api_version": 1,
+        "license": "GPL-3.0-or-later",
+        "name": "Ollama",
+        "needs": [
+          "Ollama installed"
+        ],
+        "network": [
+          "The Ollama server you set (by default on this computer)"
+        ],
+        "requires_slidemage": ">=9.1",
+        "summary": "Local AI models through Ollama: nothing leaves your computer."
+      },
+      "published": "2026-10-29",
+      "sha256": "1a571f257d7d2ed598b354ca146750c3f21797b5b8732c89523d8b18f3df6d0d",
+      "size": 31574
     }
   }
 }

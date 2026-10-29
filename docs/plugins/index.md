@@ -5,10 +5,36 @@ Plugins add features to SlideMage. SlideMage works without any of them; install 
 ## Available plugins
 
 <!-- catalogue:cards:start -->
-!!! note "No plugins listed yet"
-    The first plugins are in preparation: **Ollama** (local AI models), **Claude** (AI in the cloud) and
-    **CampusOnline** (course links and admin slides for CAMPUSonline courses). They'll be listed here once
-    they're released.
+<div class="grid cards" markdown>
+
+-   ![](claude/icon.svg){ width="40" } **[Claude](claude/index.md)** · *Recommended*
+
+    Claude Code and the Anthropic API as SlideMage's cloud AI.
+
+    **Needs:** Claude Code installed and signed in, or an Anthropic API key  
+    **Contacts:** Anthropic: api.anthropic.com and Claude Code's own connections
+
+    Version 1.0.0 · SlideMage &gt;=9.1 · by Jürgen Fleiß
+
+-   ![](ollama/icon.svg){ width="40" } **[Ollama](ollama/index.md)** · *Recommended*
+
+    Local AI models through Ollama: nothing leaves your computer.
+
+    **Needs:** Ollama installed  
+    **Contacts:** The Ollama server you set (by default on this computer)
+
+    Version 1.0.0 · SlideMage &gt;=9.1 · by Stefan Palan
+
+-   ![](campusonline/icon.svg){ width="40" } **[CampusOnline](campusonline/index.md)**
+
+    Course links, admin slides and session-aware rendering for CAMPUSonline courses.
+
+    **Needs:** A CAMPUSonline course page  
+    **Contacts:** The CAMPUSonline server of the linked course
+
+    Version 1.0.0 · SlideMage &gt;=9.0 · by Jürgen Fleiß
+
+</div>
 <!-- catalogue:cards:end -->
 
 ## Local or cloud AI?
