@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated": "2026-10-30T06:01:45Z",
+  "generated": "2026-10-30T14:13:03Z",
   "plugins_page": "https://slidemage.org/plugins/",
   "plugins": [
     {
@@ -20,6 +20,16 @@
         "Anthropic: api.anthropic.com and Claude Code's own connections"
       ],
       "releases": [
+        {
+          "version": "1.0.3",
+          "api_version": 1,
+          "requires_slidemage": ">=9.1",
+          "url": "https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.0.3/claude-1.0.3.smplugin",
+          "sha256": "a1d664d05ce5019ba8052a3ba9708dfaeb9941fe7cc1eb27adba1e7413321beb",
+          "size": 60144,
+          "published": "2026-10-30",
+          "notes_url": "https://github.com/SlideMage/slidemage-plugin-claude/releases/tag/v1.0.3"
+        },
         {
           "version": "1.0.2",
           "api_version": 1,
@@ -108,6 +118,16 @@
         "The CAMPUSonline server of the linked course"
       ],
       "releases": [
+        {
+          "version": "1.0.1",
+          "api_version": 1,
+          "requires_slidemage": ">=9.0",
+          "url": "https://github.com/SlideMage/slidemage-plugin-campusonline/releases/download/v1.0.1/campusonline-1.0.1.smplugin",
+          "sha256": "ec991db5dfa8dfc1d46d9ea0ca734935bda90c6330b9a6068965736227423a53",
+          "size": 32789,
+          "published": "2026-10-30",
+          "notes_url": "https://github.com/SlideMage/slidemage-plugin-campusonline/releases/tag/v1.0.1"
+        },
         {
           "version": "1.0.0",
           "api_version": 1,

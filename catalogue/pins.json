@@ -18,6 +18,25 @@
       "published": "2026-10-29",
       "sha256": "7d9ca181cd4e7571888c92f8094faf7beb9213854457de0bba39d0512c498fe6",
       "size": 32765
+    },
+    "1.0.1": {
+      "first_seen": "2026-10-30",
+      "manifest": {
+        "api_version": 1,
+        "license": "GPL-3.0-or-later",
+        "name": "CampusOnline",
+        "needs": [
+          "A CAMPUSonline course page"
+        ],
+        "network": [
+          "The CAMPUSonline server of the linked course"
+        ],
+        "requires_slidemage": ">=9.0",
+        "summary": "Course links, admin slides and session-aware rendering for CAMPUSonline courses."
+      },
+      "published": "2026-10-30",
+      "sha256": "ec991db5dfa8dfc1d46d9ea0ca734935bda90c6330b9a6068965736227423a53",
+      "size": 32789
     }
   },
   "claude": {
@@ -77,6 +96,25 @@
       "published": "2026-10-30",
       "sha256": "808a5ad71ffde1a703d6a92cb1cf0c2bc38fceb6089b3f16f99dedd53a4ef514",
       "size": 60030
+    },
+    "1.0.3": {
+      "first_seen": "2026-10-30",
+      "manifest": {
+        "api_version": 1,
+        "license": "GPL-3.0-or-later",
+        "name": "Claude",
+        "needs": [
+          "Claude Code installed and signed in, or an Anthropic API key"
+        ],
+        "network": [
+          "Anthropic: api.anthropic.com and Claude Code's own connections"
+        ],
+        "requires_slidemage": ">=9.1",
+        "summary": "Claude Code and the Anthropic API as SlideMage's cloud AI."
+      },
+      "published": "2026-10-30",
+      "sha256": "a1d664d05ce5019ba8052a3ba9708dfaeb9941fe7cc1eb27adba1e7413321beb",
+      "size": 60144
     }
   },
   "hello": {

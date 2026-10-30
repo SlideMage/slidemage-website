@@ -17,7 +17,7 @@ Works with SlideMage &gt;=9.1.
 
 In SlideMage: **Settings → Plugins** or **Help → Plugins…**.
 
-By hand: download [Claude 1.0.2](https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.0.2/claude-1.0.2.smplugin) (59 kB), then choose **Settings → Plugins → Install from file…**.
+By hand: download [Claude 1.0.3](https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.0.3/claude-1.0.3.smplugin) (59 kB), then choose **Settings → Plugins → Install from file…**.
 
 ## About this plugin
 
@@ -42,11 +42,18 @@ SlideMage 9.1 or later.
 
 | Version | SlideMage | Released | Download |
 |---|---|---|---|
+| 1.0.3 | &gt;=9.1 | 2026-10-30 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.0.3/claude-1.0.3.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-claude/releases/tag/v1.0.3) |
 | 1.0.2 | &gt;=9.1 | 2026-10-30 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.0.2/claude-1.0.2.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-claude/releases/tag/v1.0.2) |
 | 1.0.1 | &gt;=9.1 | 2026-10-29 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.0.1/claude-1.0.1.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-claude/releases/tag/v1.0.1) |
 | 1.0.0 | &gt;=9.1 | 2026-10-29 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.0.0/claude-1.0.0.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-claude/releases/tag/v1.0.0) |
 
 ## Changelog
+
+### v1.0.3
+
+*2026-10-30 · SlideMage names*
+
+The hook finds the project with every SlideMage version: Claude Code gets the project folder as SLIDEMAGE_PROJECT, which SlideMage reads from v10 on, and as SLIDEMASTER_PROJECT for the versions before. The tests name the project variable through SlideMage and the bibliography SlideMage.bib.
 
 ### v1.0.2
 
