@@ -82,7 +82,7 @@ TEX_CODE = (".tex", ".sty", ".cls", ".lua", ".def", ".cfg", ".fd", ".clo", ".ltx
 THEME_REFUSED_KEYS = ("api_version", "needs", "network")
 THEME_FILES = {"theme.toml", "LICENSE", "README.md", "CHANGELOG.md", "preview.png"}
 STANDARD_LAYOUTS = ("fira", "lmsans", "lmroman")
-LAYOUT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")
+LAYOUT_RE = re.compile(r"^[a-z][a-z0-9-]{0,31}$")   # as the app's themes.LAYOUT_RE
 PREVIEW_BYTES = 1_000_000
 NETWORK_ERRORS = (urllib.error.URLError, OSError, ValueError)
 
