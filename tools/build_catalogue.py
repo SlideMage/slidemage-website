@@ -6,6 +6,11 @@ generates the listed plugins' pages (docs/plugins/<id>/index.md, with screenshot
 docs/plugins/index.md, and keeps catalogue/last-run.txt as a monthly heartbeat. One plugin's problems never
 block the others.
 
+Themes (SlideMage slide templates, [[theme]] in the registry, packed as .smtheme) are listed the same way under
+"themes" in both catalogues, but only when there is one: nothing is written for a registry without themes. Their
+pins go to catalogue/theme-pins.json, the preview.png inside a package to docs/themes/<id>/preview.png; there are
+no theme pages or cards.
+
     python tools/build_catalogue.py                 build and write
     python tools/build_catalogue.py --full-check    also re-hash every pinned asset (once a day)
     python tools/build_catalogue.py --check         build and validate, write nothing (pull requests)
@@ -30,6 +35,7 @@ import urllib.error
 import urllib.request
 import zipfile
 from pathlib import Path
+from typing import NamedTuple
 
 import plugin_pages as pages
 
@@ -37,8 +43,10 @@ ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = ROOT / "registry" / "plugins.toml"
 SCHEMA = ROOT / "schema" / "plugins-index.schema.json"
 PINS = ROOT / "catalogue" / "pins.json"
+THEME_PINS = ROOT / "catalogue" / "theme-pins.json"
 HEARTBEAT = ROOT / "catalogue" / "last-run.txt"
 OUT = ROOT / "docs" / "plugins"
+THEME_OUT = ROOT / "docs" / "themes"
 MKDOCS = ROOT / "mkdocs.yml"
 
 ID_RE = re.compile(r"^[a-z][a-z0-9-]{1,31}$")
@@ -49,6 +57,12 @@ RESERVED_IDS = {
     "submit": "a page of the website",
     **dict.fromkeys(("settings", "secrets", "pending", "staging", "old", "state", "catalogue",
                      "last-update-check", "offer-seen", "migrations-seen"), "SlideMage's own storage"),
+}
+# Ids no theme may have: the templates SlideMage ships (a theme cannot replace one) and "submit", where a theme's
+# page would go (/themes/submit/).
+RESERVED_THEME_IDS = {
+    "submit": "a page of the website",
+    **dict.fromkeys(("slidemage", "greyscale"), "a template SlideMage ships"),
 }
 VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
 TAG_RE = re.compile(r"^v(\d+\.\d+\.\d+)$")
@@ -61,6 +75,15 @@ SCREENSHOTS, SCREENSHOT_BYTES = 6, 1_000_000
 SVG_ACTIVE = re.compile(r"<script|\bon[a-z]+\s*=|javascript:|<foreignObject", re.IGNORECASE)
 REGISTRY_KEYS = {"id", "repository", "maintainer", "recommended", "releases", "yanked", "hidden"}
 MANIFEST_KEYS = ("name", "summary", "license", "needs", "network", "api_version", "requires_slidemage")
+THEME_MANIFEST_KEYS = ("name", "summary", "license", "requires_slidemage", "layout")
+# Only a theme's template and its own layout profile may be TeX code: an installed theme sits on TeX's search path
+# ahead of the TeX distribution, so a .sty in it would replace a package of the same name for every deck.
+TEX_CODE = (".tex", ".sty", ".cls", ".lua", ".def", ".cfg", ".fd", ".clo", ".ltx", ".dtx", ".ins")
+THEME_REFUSED_KEYS = ("api_version", "needs", "network")
+THEME_FILES = {"theme.toml", "LICENSE", "README.md", "CHANGELOG.md", "preview.png"}
+STANDARD_LAYOUTS = ("fira", "lmsans", "lmroman")
+LAYOUT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")
+PREVIEW_BYTES = 1_000_000
 NETWORK_ERRORS = (urllib.error.URLError, OSError, ValueError)
 
 
@@ -135,9 +158,11 @@ def version_key(version: str) -> tuple[int, ...]:
     return tuple(int(part) for part in version.split("."))
 
 
-def load_registry(text: str) -> list[dict]:
+def load_registry(text: str, table: str = "plugin") -> list[dict]:
+    """The [[plugin]] entries of the registry, or with table="theme" its [[theme]] entries (same keys)."""
+    reserved = RESERVED_IDS if table == "plugin" else RESERVED_THEME_IDS
     try:
-        entries = tomllib.loads(text).get("plugin", [])
+        entries = tomllib.loads(text).get(table, [])
     except tomllib.TOMLDecodeError as exc:
         raise RegistryError(f"registry does not parse: {exc}") from exc
     seen = set()
@@ -145,8 +170,8 @@ def load_registry(text: str) -> list[dict]:
         pid = entry.get("id")
         if not isinstance(pid, str) or not ID_RE.match(pid):
             raise RegistryError(f"invalid id {pid!r}")
-        if pid in RESERVED_IDS:
-            raise RegistryError(f"{pid}: the id is reserved for {RESERVED_IDS[pid]}")
+        if pid in reserved:
+            raise RegistryError(f"{pid}: the id is reserved for {reserved[pid]}")
         if pid in seen:
             raise RegistryError(f"{pid}: listed twice")
         seen.add(pid)
@@ -170,14 +195,18 @@ def load_registry(text: str) -> list[dict]:
     return entries
 
 
+def check_text(manifest: dict, key: str, longest: int, problems: list[str]) -> None:
+    value = manifest.get(key)
+    if not isinstance(value, str) or not 1 <= len(value.strip()) <= longest:
+        problems.append(f"{key} must be text of 1 to {longest} characters")
+
+
 def check_manifest(manifest: dict, pid: str, version: str) -> list[str]:
     """What is wrong with a plugin.toml; empty when nothing is."""
     problems = []
 
     def text(key, longest):
-        value = manifest.get(key)
-        if not isinstance(value, str) or not 1 <= len(value.strip()) <= longest:
-            problems.append(f"{key} must be text of 1 to {longest} characters")
+        check_text(manifest, key, longest, problems)
 
     if manifest.get("id") != pid:
         problems.append(f"id is {manifest.get('id')!r}, the registry has {pid!r}")
@@ -223,6 +252,111 @@ def inspect_asset(data: bytes, pid: str, version: str) -> tuple[dict | None, lis
     return (None if problems else manifest), problems
 
 
+def check_theme_manifest(manifest: dict, tid: str, version: str) -> list[str]:
+    """What is wrong with a theme.toml; empty when nothing is."""
+    problems = []
+    refused = [key for key in THEME_REFUSED_KEYS if key in manifest]
+    if refused:
+        problems.append(f"theme.toml has {', '.join(refused)}: those belong to plugin.toml, a theme runs no Python")
+    if manifest.get("id") != tid:
+        problems.append(f"id is {manifest.get('id')!r}, the registry has {tid!r}")
+    if manifest.get("version") != version:
+        problems.append(f"version is {manifest.get('version')!r}, the tag has {version!r}")
+    for key, longest in (("name", 40), ("summary", 120), ("author", 200), ("license", 200)):
+        check_text(manifest, key, longest, problems)
+    span = manifest.get("requires_slidemage")
+    if not isinstance(span, str) or not RANGE_RE.match(span):
+        problems.append("requires_slidemage is not a version range")
+    homepage = manifest.get("homepage")
+    if not isinstance(homepage, str) or not homepage.startswith(("https://", "http://")):
+        problems.append("homepage must be an http or https URL")
+    layout = manifest.get("layout")
+    if not isinstance(layout, str) or not LAYOUT_RE.match(layout):
+        problems.append("layout must be fira, lmsans, lmroman or the name of the package's own layout profile")
+    return problems
+
+
+def check_theme_members(archive: zipfile.ZipFile, tid: str, layout: str | None) -> list[str]:
+    """What is wrong with the files of a .smtheme: paths, links, code, compiled files, what must be there."""
+    template = f"SlideMage_template_{tid}.tex"
+    own_layout = f"SlideMage_layout_{layout}.tex" if layout and layout not in STANDARD_LAYOUTS else None
+    scheme = f"schemes/scheme_{tid.replace('-', '_')}/"
+    unsafe, compiled, code, strays, wrong_scheme = [], [], [], [], []
+    for info in archive.infolist():
+        name = info.filename
+        # orig_filename: on Windows zipfile turns a backslash in filename into a slash
+        if (name.startswith("/") or re.match(r"^[A-Za-z]:", name) or "\\" in info.orig_filename
+                or ".." in name.split("/") or (info.external_attr >> 16) & 0o170000 == 0o120000):
+            unsafe.append(name)
+        elif name.endswith("/"):
+            continue
+        elif name.lower().endswith(COMPILED):
+            compiled.append(name)
+        elif name.lower().endswith(TEX_CODE) and name not in (template, own_layout):
+            code.append(name)
+        elif name in THEME_FILES or name in (template, own_layout) or name.startswith(("LICENSES/", scheme)):
+            continue
+        elif name.startswith("schemes/"):
+            wrong_scheme.append(name)
+        else:
+            strays.append(name)
+    names = set(archive.namelist())
+    problems = []
+    for found, what in ((unsafe, "paths or links outside the package"), (compiled, "compiled files"),
+                        (code, "TeX code besides the template and its own layout profile"),
+                        (wrong_scheme, f"files in a scheme folder other than {scheme}"),
+                        (strays, "files a theme package does not have")):
+        if found:
+            problems.append(f"{what}: {', '.join(found[:3])}")
+    for required in (template, "LICENSE", "README.md", "CHANGELOG.md") + ((own_layout,) if own_layout else ()):
+        if required not in names:
+            problems.append(f"no {required} in the asset")
+    return problems
+
+
+def inspect_theme(data: bytes, tid: str, version: str) -> tuple[dict | None, list[str]]:
+    """The theme.toml of a downloaded .smtheme, or the problems that refuse it."""
+    try:
+        archive = zipfile.ZipFile(io.BytesIO(data))
+    except zipfile.BadZipFile:
+        return None, ["the asset is not a zip file"]
+    if "theme.toml" not in archive.namelist():
+        return None, ["no theme.toml at the root of the asset"]
+    try:
+        manifest = tomllib.loads(archive.read("theme.toml").decode("utf-8"))
+    except (UnicodeDecodeError, tomllib.TOMLDecodeError) as exc:
+        return None, [f"theme.toml does not parse: {exc}"]
+    layout = manifest.get("layout")
+    problems = (check_theme_manifest(manifest, tid, version)
+                + check_theme_members(archive, tid, layout if isinstance(layout, str) else None))
+    return (None if problems else manifest), problems
+
+
+def theme_preview(data: bytes, tid: str, version: str, report: Report) -> bytes | None:
+    """preview.png from inside a .smtheme; None when there is none or it cannot be used."""
+    with zipfile.ZipFile(io.BytesIO(data)) as archive:
+        if "preview.png" not in archive.namelist():
+            return None
+        info = archive.getinfo("preview.png")
+        picture = archive.read(info) if info.file_size <= PREVIEW_BYTES else b""
+    if picture[:8] != PNG:
+        report.add("refused", f"theme {tid}", version, "preview.png is not a PNG of at most 1 MB; no preview")
+        return None
+    return picture
+
+
+class Kind(NamedTuple):
+    """What differs between listing a plugin and a theme."""
+    prefix: str         # in front of the id where problems are reported
+    suffix: str         # of the release asset
+    inspect: object     # (data, id, version) -> (manifest | None, problems)
+    keys: tuple         # the manifest fields a pin keeps
+
+
+PLUGIN = Kind("", ".smplugin", inspect_asset, MANIFEST_KEYS)
+THEME = Kind("theme ", ".smtheme", inspect_theme, THEME_MANIFEST_KEYS)
+
+
 def check_icon(path: str, data: bytes) -> str | None:
     """Why an icon cannot be used; None when it can."""
     if path.endswith(".svg"):
@@ -241,10 +375,10 @@ def check_icon(path: str, data: bytes) -> str | None:
 
 
 def list_releases(entry: dict, releases: list[dict], gh: GitHub, pins: dict, today: str, full_check: bool,
-                  report: Report) -> list[tuple[dict, dict]]:
-    """(catalogue release, GitHub release) for every release of one plugin that can be listed, newest first.
-    Pins new versions into pins[id]."""
-    pid = entry["id"]
+                  report: Report, kind: Kind = PLUGIN, previews: dict | None = None) -> list[tuple[dict, dict]]:
+    """(catalogue release, GitHub release) for every release of one plugin (or theme) that can be listed, newest
+    first. Pins new versions into pins[id]; for a theme previews[version] gets the preview.png of each new one."""
+    pid, who = entry["id"], f"{kind.prefix}{entry['id']}"
     plugin_pins = pins.setdefault(pid, {})
     approved = entry.get("releases", "all")
     listed = []
@@ -254,45 +388,45 @@ def list_releases(entry: dict, releases: list[dict], gh: GitHub, pins: dict, tod
         tag = release.get("tag_name", "")
         match = TAG_RE.match(tag)
         if not match:
-            report.add("refused", pid, tag, "the tag is not v<MAJOR.MINOR.PATCH>")
+            report.add("refused", who, tag, "the tag is not v<MAJOR.MINOR.PATCH>")
             continue
         version = match.group(1)
         if (approved != "all" and version not in approved) or version in entry.get("yanked", []):
             continue
-        name = f"{pid}-{version}.smplugin"
+        name = f"{pid}-{version}{kind.suffix}"
         assets = {asset["name"]: asset for asset in release.get("assets", [])}
         if name not in assets:
-            report.add("refused", pid, version, f"no asset named {name}")
+            report.add("refused", who, version, f"no asset named {name}")
             continue
         extra = sorted(set(assets) - {name, f"{name}.sha256"})
         if extra:
-            report.add("refused", pid, version, f"assets besides {name} and its .sha256: {', '.join(extra)}")
+            report.add("refused", who, version, f"assets besides {name} and its .sha256: {', '.join(extra)}")
             continue
         asset, pin = assets[name], plugin_pins.get(version)
         if pin is None:
-            pin = pin_new(entry, version, release, assets, gh, today, report)
+            pin = pin_new(entry, version, release, assets, gh, today, report, kind, previews)
             if pin is None:
                 continue
             plugin_pins[version] = pin
         else:
             if asset.get("size") != pin["size"]:
-                report.add("changed", pid, version,
+                report.add("changed", who, version,
                            f"the asset's size changed from {pin['size']} to {asset.get('size')} bytes")
                 continue
             if full_check:
                 try:
                     digest = hashlib.sha256(gh.download(asset["browser_download_url"])).hexdigest()
                 except NETWORK_ERRORS as exc:
-                    report.add("error", pid, version, f"could not re-check the asset: {exc}")
+                    report.add("error", who, version, f"could not re-check the asset: {exc}")
                 else:
                     if digest != pin["sha256"]:
-                        report.add("changed", pid, version, f"the asset's SHA-256 changed from {pin['sha256']} "
+                        report.add("changed", who, version, f"the asset's SHA-256 changed from {pin['sha256']} "
                                                             f"to {digest}")
                         continue
         manifest = pin["manifest"]
         listed.append(({
             "version": version,
-            "api_version": manifest["api_version"],
+            **({"api_version": manifest["api_version"]} if "api_version" in manifest else {}),
             "requires_slidemage": manifest["requires_slidemage"],
             "url": asset["browser_download_url"],
             "sha256": pin["sha256"],
@@ -305,43 +439,45 @@ def list_releases(entry: dict, releases: list[dict], gh: GitHub, pins: dict, tod
 
 
 def pin_new(entry: dict, version: str, release: dict, assets: dict, gh: GitHub, today: str,
-            report: Report) -> dict | None:
+            report: Report, kind: Kind = PLUGIN, previews: dict | None = None) -> dict | None:
     """Download, check and pin a version seen for the first time; None when it is refused."""
-    pid = entry["id"]
-    name = f"{pid}-{version}.smplugin"
+    pid, who = entry["id"], f"{kind.prefix}{entry['id']}"
+    name = f"{pid}-{version}{kind.suffix}"
     for required in ("README.md", "CHANGELOG.md"):
         try:
             present = gh.file_at(entry["repository"], release["tag_name"], required) is not None
         except NETWORK_ERRORS as exc:
-            report.add("error", pid, version, f"could not read {required}: {exc}")
+            report.add("error", who, version, f"could not read {required}: {exc}")
             return None
         if not present:
-            report.add("refused", pid, version, f"no {required} at the tag")
+            report.add("refused", who, version, f"no {required} at the tag")
             return None
     try:
         data = gh.download(assets[name]["browser_download_url"])
     except NETWORK_ERRORS as exc:
-        report.add("error", pid, version, f"could not download the asset: {exc}")
+        report.add("error", who, version, f"could not download the asset: {exc}")
         return None
     digest = hashlib.sha256(data).hexdigest()
     if f"{name}.sha256" in assets:
         try:
             expected = gh.download(assets[f"{name}.sha256"]["browser_download_url"]).decode("ascii").split()[0]
         except NETWORK_ERRORS as exc:
-            report.add("error", pid, version, f"could not download the .sha256 asset: {exc}")
+            report.add("error", who, version, f"could not download the .sha256 asset: {exc}")
             return None
         except (UnicodeDecodeError, IndexError):
-            report.add("refused", pid, version, "the .sha256 asset is not a hash")
+            report.add("refused", who, version, "the .sha256 asset is not a hash")
             return None
         if expected.lower() != digest:
-            report.add("refused", pid, version, f"the .sha256 asset says {expected}, the asset hashes to {digest}")
+            report.add("refused", who, version, f"the .sha256 asset says {expected}, the asset hashes to {digest}")
             return None
-    manifest, problems = inspect_asset(data, pid, version)
+    manifest, problems = kind.inspect(data, pid, version)
     if problems:
-        report.add("refused", pid, version, "; ".join(problems))
+        report.add("refused", who, version, "; ".join(problems))
         return None
+    if previews is not None:
+        previews[version] = theme_preview(data, pid, version, report)
     return {"sha256": digest, "size": len(data), "published": release["published_at"][:10], "first_seen": today,
-            "manifest": {key: manifest[key] for key in MANIFEST_KEYS}}
+            "manifest": {key: manifest[key] for key in kind.keys}}
 
 
 def fetch_icon(entry: dict, tag: str, gh: GitHub, report: Report) -> tuple[str, bytes] | None | bool:
@@ -445,16 +581,69 @@ def build(registry: list[dict], gh: GitHub, pins: dict, previous: dict[str, dict
     return plugins, icons, materials
 
 
-def catalogue(plugins: list[dict], site_url: str, now: str, hidden: bool) -> dict:
+def build_themes(registry: list[dict], gh: GitHub, pins: dict, previous: dict[str, dict], site_url: str,
+                 today: str, full_check: bool, report: Report) -> tuple[list[dict], dict]:
+    """Catalogue entries for every registry theme with a listable release (hidden ones carry "_hidden"), and the
+    previews to write: {id: bytes | None (none) | False (keep what is there)}. A preview is read from a package
+    only when its version is pinned, so the newest version's preview stays until a newer one replaces it."""
+    themes, previews = [], {}
+    for entry in registry:
+        tid, who = entry["id"], f"theme {entry['id']}"
+        try:
+            releases = gh.releases(entry["repository"])
+        except NETWORK_ERRORS as exc:
+            report.add("error", who, None, f"could not list releases: {exc}; the previous entry is kept")
+            if tid in previous:
+                themes.append({**previous[tid], "_hidden": entry.get("hidden", False)})
+                previews[tid] = False
+            continue
+        found = {}
+        listed = list_releases(entry, releases, gh, pins, today, full_check, report, THEME, found)
+        if not listed:
+            report.add("error", who, None, "no release can be listed")
+            continue
+        newest = listed[0][0]["version"]
+        manifest = pins[tid][newest]["manifest"]
+        theme = {
+            "id": tid,
+            "name": manifest["name"],
+            "summary": manifest["summary"],
+            "homepage": f"{site_url}themes/{tid}/",
+            "source": f"https://github.com/{entry['repository']}",
+            "license": manifest["license"],
+            "maintainer": entry["maintainer"],
+            "recommended": entry.get("recommended", False),
+            "layout": manifest["layout"],
+            "releases": [release for release, _ in listed],
+            "_hidden": entry.get("hidden", False),
+        }
+        previews[tid] = found.get(newest, False)
+        if previews[tid] is False and "preview" in previous.get(tid, {}):
+            theme["preview"] = previous[tid]["preview"]
+        elif previews[tid]:
+            theme["preview"] = f"{site_url}themes/{tid}/preview.png"
+        themes.append(theme)
+    themes.sort(key=lambda theme: (not theme["recommended"], theme["name"].lower()))
+    return themes, previews
+
+
+def catalogue(plugins: list[dict], site_url: str, now: str, hidden: bool, themes: list[dict] = ()) -> dict:
     keys = ("id", "name", "summary", "homepage", "source", "icon", "license", "maintainer", "recommended",
             "needs", "network", "releases")
-    return {
+    theme_keys = ("id", "name", "summary", "homepage", "source", "preview", "license", "maintainer", "recommended",
+                  "layout", "releases")
+    doc = {
         "schema": 1,
         "generated": now,
         "plugins_page": f"{site_url}plugins/",
         "plugins": [{key: plugin[key] for key in keys if key in plugin}
                     for plugin in plugins if hidden or not plugin["_hidden"]],
     }
+    shown = [{key: theme[key] for key in theme_keys if key in theme}
+             for theme in themes if hidden or not theme["_hidden"]]
+    if shown:   # no "themes" key until there is a theme to list
+        doc["themes"] = shown
+    return doc
 
 
 def validate(doc: dict) -> list[str]:
@@ -499,6 +688,24 @@ def write_icons(icons: dict, keep: set[str]) -> None:
                 old.unlink()
 
 
+def write_previews(previews: dict, keep: set[str]) -> None:
+    """Copy the themes' previews to docs/themes/<id>/preview.png; previews of themes no longer in the catalogue
+    go. Touches nothing without a theme."""
+    for tid, picture in previews.items():
+        path = THEME_OUT / tid / "preview.png"
+        if picture is False:
+            continue
+        if not picture:
+            path.unlink(missing_ok=True)
+        elif not path.exists() or path.read_bytes() != picture:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(picture)
+    if THEME_OUT.exists():
+        for folder in THEME_OUT.iterdir():
+            if folder.is_dir() and folder.name not in keep:
+                (folder / "preview.png").unlink(missing_ok=True)
+
+
 def write_pages(plugins: list[dict], materials: dict) -> None:
     """The listed plugins' pages and screenshots, the cards on /plugins/; pages of plugins no longer listed go."""
     listed = [plugin for plugin in plugins if not plugin["_hidden"]]
@@ -534,18 +741,23 @@ def site_url() -> str:
     return match.group(1).rstrip("/") + "/"
 
 
-def previous_entries() -> dict[str, dict]:
+def previous_entries(key: str = "plugins") -> dict[str, dict]:
     path = OUT / "index-test.json"
     if not path.exists():
         return {}
-    return {plugin["id"]: plugin for plugin in json.loads(path.read_text(encoding="utf-8"))["plugins"]}
+    return {entry["id"]: entry for entry in json.loads(path.read_text(encoding="utf-8")).get(key, [])}
 
 
-def summary(report: Report, plugins: list[dict]) -> str:
+def summary(report: Report, plugins: list[dict], themes: list[dict] = ()) -> str:
     lines = ["## Plugin catalogue", ""]
     for plugin in plugins:
         hidden = " (hidden)" if plugin["_hidden"] else ""
         lines.append(f"- **{plugin['id']}**{hidden}: {', '.join(r['version'] for r in plugin['releases'])}")
+    if themes:
+        lines += ["", "### Themes", ""]
+        for theme in themes:
+            hidden = " (hidden)" if theme["_hidden"] else ""
+            lines.append(f"- **{theme['id']}**{hidden}: {', '.join(r['version'] for r in theme['releases'])}")
     if report.problems:
         lines += ["", "### Problems", ""]
         lines += [f"- {p['kind']}: {p['plugin']} {p['version'] or ''}: {p['message']}" for p in report.problems]
@@ -564,38 +776,47 @@ def main(argv: list[str] | None = None, gh: GitHub | None = None) -> int:
     now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0)
     try:
         registry = load_registry(REGISTRY.read_text(encoding="utf-8"))
+        theme_registry = load_registry(REGISTRY.read_text(encoding="utf-8"), "theme")
         base = site_url()
     except RegistryError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
     pins = json.loads(PINS.read_text(encoding="utf-8")) if PINS.exists() else {}
+    theme_pins = json.loads(THEME_PINS.read_text(encoding="utf-8")) if THEME_PINS.exists() else {}
     plugins, icons, materials = build(registry, gh, pins, previous_entries(), base, now.date().isoformat(),
                                       args.full_check, report)
+    themes, previews = build_themes(theme_registry, gh, theme_pins, previous_entries("themes"), base,
+                                    now.date().isoformat(), args.full_check, report)
     stamp = now.isoformat().replace("+00:00", "Z")
-    public, test = catalogue(plugins, base, stamp, False), catalogue(plugins, base, stamp, True)
+    public, test = catalogue(plugins, base, stamp, False, themes), catalogue(plugins, base, stamp, True, themes)
     invalid = validate(public) + validate(test)
 
     if args.report:
         args.report.write_text(json.dumps({"problems": report.problems}, indent=2) + "\n", encoding="utf-8")
     if os.environ.get("GITHUB_STEP_SUMMARY"):
         with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as handle:
-            handle.write(summary(report, plugins))
+            handle.write(summary(report, plugins, themes))
     if invalid:
         print("error: the catalogue does not match the schema:\n  " + "\n  ".join(invalid), file=sys.stderr)
         return 1
     if args.check:
         listed = {plugin["id"] for plugin in plugins}
         missing = [entry["id"] for entry in registry if entry["id"] not in listed]
+        listed_themes = {theme["id"] for theme in themes}
+        missing += [f"theme {entry['id']}" for entry in theme_registry if entry["id"] not in listed_themes]
         if missing:
             print(f"error: no listable release for {', '.join(missing)}", file=sys.stderr)
             return 1
         return 0
 
     write_if_changed(PINS, json.dumps(pins, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
+    if any(theme_pins.values()) or THEME_PINS.exists():   # created only when there is something to pin
+        write_if_changed(THEME_PINS, json.dumps(theme_pins, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
     write_catalogue(OUT / "index.json", public)
     write_catalogue(OUT / "index-test.json", test)
     write_icons(icons, {plugin["id"] for plugin in plugins})
     write_pages(plugins, materials)
+    write_previews(previews, {theme["id"] for theme in themes})
     write_if_changed(HEARTBEAT, f"{now:%Y-%m}\n")
     return 0
 
