@@ -9,6 +9,11 @@
 #   yanked       versions taken out of the catalogue (a serious bug, a security problem)
 #   hidden       optional; true: only in plugins/index-test.json, never in the real list or on the pages
 
+# Themes (slide templates, packed as .smtheme) are approved the same way, with [[theme]] entries that take the
+# same keys as [[plugin]] (id is the template key, e.g. "uni-graz"; hidden works the same). None is listed yet.
+# A private theme (one carrying an institution's logo and corporate design) must never be listed here, not even
+# with hidden = true: hidden still publishes its repository URL in plugins/index-test.json.
+
 [[plugin]]
 id = "hello"
 repository = "SlideMage/slidemage-plugin-hello"
