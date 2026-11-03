@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated": "2026-10-30T14:13:03Z",
+  "generated": "2026-11-03T10:11:06Z",
   "plugins_page": "https://slidemage.org/plugins/",
   "plugins": [
     {
@@ -137,6 +137,31 @@
           "size": 32765,
           "published": "2026-10-29",
           "notes_url": "https://github.com/SlideMage/slidemage-plugin-campusonline/releases/tag/v1.0.0"
+        }
+      ]
+    },
+    {
+      "id": "exam-forge",
+      "name": "Exam Forge",
+      "summary": "Exam questions linked to the material you taught, with clearly documented AI use. Review, export, assemble exams.",
+      "homepage": "https://slidemage.org/plugins/exam-forge/",
+      "source": "https://github.com/SlideMage/slidemage-plugin-exam-forge",
+      "icon": "https://slidemage.org/plugins/exam-forge/icon.svg",
+      "license": "GPL-3.0-or-later",
+      "maintainer": "Jürgen Fleiß",
+      "recommended": false,
+      "needs": [],
+      "network": [],
+      "releases": [
+        {
+          "version": "0.10.2",
+          "api_version": 1,
+          "requires_slidemage": ">=0.13.31",
+          "url": "https://github.com/SlideMage/slidemage-plugin-exam-forge/releases/download/v0.10.2/exam-forge-0.10.2.smplugin",
+          "sha256": "763e96695421417f90090688c6d18963c2216b626547ae925d4e11ecb907ef97",
+          "size": 110348,
+          "published": "2026-11-03",
+          "notes_url": "https://github.com/SlideMage/slidemage-plugin-exam-forge/releases/tag/v0.10.2"
         }
       ]
     }

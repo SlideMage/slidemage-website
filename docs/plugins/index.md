@@ -34,6 +34,15 @@ Plugins add features to SlideMage. SlideMage works without any of them; install 
 
     Version 1.0.1 · SlideMage &gt;=9.0 · by Jürgen Fleiß
 
+-   ![](exam-forge/icon.svg){ width="40" } **[Exam Forge](exam-forge/index.md)**
+
+    Exam questions linked to the material you taught, with clearly documented AI use. Review, export, assemble exams.
+
+    **Needs:** nothing beyond SlideMage  
+    **Contacts:** none, nothing leaves your computer
+
+    Version 0.10.2 · SlideMage &gt;=0.13.31 · by Jürgen Fleiß
+
 </div>
 <!-- catalogue:cards:end -->
 

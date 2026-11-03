@@ -117,6 +117,23 @@
       "size": 60144
     }
   },
+  "exam-forge": {
+    "0.10.2": {
+      "first_seen": "2026-11-03",
+      "manifest": {
+        "api_version": 1,
+        "license": "GPL-3.0-or-later",
+        "name": "Exam Forge",
+        "needs": [],
+        "network": [],
+        "requires_slidemage": ">=0.13.31",
+        "summary": "Exam questions linked to the material you taught, with clearly documented AI use. Review, export, assemble exams."
+      },
+      "published": "2026-11-03",
+      "sha256": "763e96695421417f90090688c6d18963c2216b626547ae925d4e11ecb907ef97",
+      "size": 110348
+    }
+  },
   "hello": {
     "0.1.0": {
       "first_seen": "2026-10-26",
