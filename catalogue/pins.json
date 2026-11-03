@@ -204,6 +204,25 @@
       "published": "2026-10-29",
       "sha256": "ea4b58d9be05f45601cb773e4570edd54565080d537ac2c3d892ef4971522efc",
       "size": 31555
+    },
+    "1.0.2": {
+      "first_seen": "2026-11-03",
+      "manifest": {
+        "api_version": 1,
+        "license": "GPL-3.0-or-later",
+        "name": "Ollama",
+        "needs": [
+          "Ollama installed"
+        ],
+        "network": [
+          "The Ollama server you set (by default on this computer)"
+        ],
+        "requires_slidemage": ">=9.1",
+        "summary": "Local AI models through Ollama: nothing leaves your computer."
+      },
+      "published": "2026-11-03",
+      "sha256": "986daa73d02e656ab8cd98aad089784669437ff0564e85054923d72fd46ad0c6",
+      "size": 32275
     }
   }
 }

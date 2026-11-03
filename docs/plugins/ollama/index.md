@@ -17,7 +17,7 @@ Works with SlideMage &gt;=9.1.
 
 In SlideMage: **Settings → Plugins** or **Help → Plugins…**.
 
-By hand: download [Ollama 1.0.1](https://github.com/SlideMage/slidemage-plugin-ollama/releases/download/v1.0.1/ollama-1.0.1.smplugin) (31 kB), then choose **Settings → Plugins → Install from file…**.
+By hand: download [Ollama 1.0.2](https://github.com/SlideMage/slidemage-plugin-ollama/releases/download/v1.0.2/ollama-1.0.2.smplugin) (32 kB), then choose **Settings → Plugins → Install from file…**.
 
 ## About this plugin
 
@@ -45,10 +45,17 @@ and `localhost` always connect directly. An HTTP proxy can see requests sent to 
 
 | Version | SlideMage | Released | Download |
 |---|---|---|---|
+| 1.0.2 | &gt;=9.1 | 2026-11-03 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-ollama/releases/download/v1.0.2/ollama-1.0.2.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-ollama/releases/tag/v1.0.2) |
 | 1.0.1 | &gt;=9.1 | 2026-10-29 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-ollama/releases/download/v1.0.1/ollama-1.0.1.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-ollama/releases/tag/v1.0.1) |
 | 1.0.0 | &gt;=9.1 | 2026-10-29 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-ollama/releases/download/v1.0.0/ollama-1.0.0.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-ollama/releases/tag/v1.0.0) |
 
 ## Changelog
+
+### v1.0.2
+
+*2026-11-01 · update progress*
+
+Updating or deleting an Ollama model in Settings shows a progress bar and the current step, with the model number when several are selected, and keeps reporting in the main window status line if Settings was closed meanwhile; the progress used to reach only the debug log.
 
 ### v1.0.1
 
