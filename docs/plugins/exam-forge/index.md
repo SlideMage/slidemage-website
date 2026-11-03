@@ -25,10 +25,10 @@ A [SlideMage](https://slidemage.org) plugin for writing exam questions for a dec
 
 ## Questions
 
-&lt;table width="100%"&gt;
-&lt;tr&gt;
-&lt;td width="55%" valign="top"&gt;&lt;img src="docs/screenshots/questions.png" alt="Questions tab" width="100%"&gt;&lt;/td&gt;
-&lt;td width="45%" valign="top"&gt;
+
+
+*Questions tab*
+
 
 **The bank holds answer keys and rationales: keep its folder private.** Choose the folder on first use; **Change folder…** in Settings moves it.
 
@@ -45,16 +45,16 @@ A [SlideMage](https://slidemage.org) plugin for writing exam questions for a dec
 - Replies arrive as **AI draft** until you review them.
 - **AI-assisted** is a permanent label on every question an AI drafted or revised.
 
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/table&gt;
+
+
+
 
 ## Export
 
-&lt;table width="100%"&gt;
-&lt;tr&gt;
-&lt;td width="40%" valign="top"&gt;&lt;img src="docs/screenshots/export-html.png" alt="Question page export" width="100%"&gt;&lt;/td&gt;
-&lt;td width="60%" valign="top"&gt;
+
+
+*Question page export*
+
 
 The **Export** menu holds the answers: keep the files private.
 
@@ -62,24 +62,24 @@ The **Export** menu holds the answers: keep the files private.
 - **Question table (CSV):** every question, one row each.
 - **Question page (HTML):** every question with its answers, like the exam key.
 
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/table&gt;
+
+
+
 
 ## Exams
 
-&lt;table width="100%"&gt;
-&lt;tr&gt;
-&lt;td width="55%" valign="top"&gt;&lt;img src="docs/screenshots/exam.png" alt="Exam tab" width="100%"&gt;&lt;/td&gt;
-&lt;td width="45%" valign="top"&gt;
+
+
+*Exam tab*
+
 
 The **Exam** tab: set easy and hard counts per topic, review and swap the proposal, then **Approve and freeze**. This issues a manifest in the bank folder and saves an exam copy and a private key (HTML). **Record a correction…** logs later changes.
 
 Easy questions are worth 12 points and 2.5 minutes, hard ones 24 points and 5 minutes.
 
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/table&gt;
+
+
+
 
 ## Compatibility
 
