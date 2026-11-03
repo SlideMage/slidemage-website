@@ -37,3 +37,11 @@ maintainer = "Jürgen Fleiß"
 recommended = false
 releases = "all"
 yanked = []
+
+[[plugin]]
+id = "exam-forge"
+repository = "SlideMage/slidemage-plugin-exam-forge"
+maintainer = "Jürgen Fleiß"
+recommended = false
+releases = "all"
+yanked = []
