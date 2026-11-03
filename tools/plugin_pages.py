@@ -2,9 +2,10 @@
 material: README.md, CHANGELOG.md and website/screenshots/ at the newest listed release.
 
 Plugin texts are third-party content rendered on this site, so they are defused before they reach MkDocs:
-raw HTML and attribute lists are escaped, links other than http(s), mailto and in-page anchors are removed,
-relative links point to the plugin's repository at the tag, and images become their alt text (screenshots come
-from website/screenshots/ only).
+raw HTML tags are dropped (their text stays, a script or style goes whole) and any other angle bracket and attribute
+lists are escaped, links other than http(s), mailto and in-page anchors are removed, relative links point to the
+plugin's repository at the tag, and images, Markdown or <img>, become their alt text (screenshots come from
+website/screenshots/ only).
 """
 from __future__ import annotations
 
@@ -14,6 +15,12 @@ CUT_HEADINGS = re.compile(r"^##\s+(development|building|contributing)\s*#*\s*$",
 FENCE = re.compile(r"^(\s{0,3})(`{3,}|~{3,})\s*([\w+-]*)")
 CODE_SPAN = re.compile(r"(`+)(.+?)\1")
 IMAGE = re.compile(r"!\[([^\]]*)\]\([^)]*\)")
+# Raw HTML in a README (a layout table that puts a screenshot beside the text on GitHub): the tags are dropped and
+# their text kept, an <img> becomes its alt text like a Markdown image, a script or style goes with its content.
+HTML_DROPPED = re.compile(r"<(script|style)\b[^>]*>.*?</\1\s*>|<!--.*?-->", re.IGNORECASE)
+HTML_IMG = re.compile(r"<img\b[^>]*>", re.IGNORECASE)
+HTML_ALT = re.compile(r"""\balt\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))""", re.IGNORECASE)
+HTML_TAG = re.compile(r"</?[A-Za-z][A-Za-z0-9-]*(?:\s[^<>]*)?/?>")
 LINK = re.compile(r"\[([^\]]*)\]\(\s*([^)\s]*)([^)]*)\)")
 REFERENCE = re.compile(r"^(\s{0,3}\[[^\]]+\]:\s*)(\S+)(.*)$")
 ENTRY = re.compile(r"^(v\d+\.\d+\.\d+) \(([^,)]*)(?:,\s*([^)]*))?\):\s*(.*)$")
@@ -40,7 +47,15 @@ def _url(url: str, repo: str, tag: str) -> str | None:
     return f"https://github.com/{repo}/blob/{tag}/{url.lstrip('./')}"
 
 
+def _html_image(match) -> str:
+    alt = HTML_ALT.search(match.group(0))
+    text = next((g for g in alt.groups() if g), "") if alt else ""
+    return f"*{text}*" if text.strip() else ""
+
+
 def _prose(text: str, repo: str, tag: str) -> str:
+    text = HTML_DROPPED.sub("", text)
+    text = HTML_TAG.sub("", HTML_IMG.sub(_html_image, text))
     text = text.replace("<", "&lt;").replace(">", "&gt;").replace("{", "&#123;").replace("}", "&#125;")
     text = IMAGE.sub(lambda m: f"*{m.group(1)}*" if m.group(1).strip() else "", text)
 
