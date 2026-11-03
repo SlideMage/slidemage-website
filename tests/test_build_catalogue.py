@@ -289,13 +289,26 @@ def test_third_party_markdown_is_defused():
         "# Title\n<script>alert(1)</script>\nA [bad](javascript:alert(1)) and [doc](docs/x.md) and "
         "[ok](https://a.org)\n![shot](img.png)\nText{: onclick=\"x\" }\n`<kept>` code\n"
         "```python {onclick=x}\n<b>in code</b>\n```\n[ref]: javascript:evil\n", "o/p", "v1.0.0")
-    assert "<script" not in text and "&lt;script&gt;" in text
+    assert "script" not in text and "alert(1)\n" not in text          # dropped with its content
     assert "javascript:" not in text
     assert "(https://github.com/o/p/blob/v1.0.0/docs/x.md)" in text and "(https://a.org)" in text
     assert "*shot*" in text and "img.png" not in text
     assert "{:" not in text and "&#123;: onclick" in text
     assert "`<kept>`" in text and "<b>in code</b>" in text
     assert "```python\n" in text and "## Title" in text
+
+
+def test_raw_html_layout_in_a_readme_keeps_its_text_and_shows_no_tags():
+    # Exam Forge 0.10.2 puts each screenshot beside its text in a table; its tags showed as text on the page.
+    text = bc.pages.defuse(
+        '## Questions\n\n<table width="100%">\n<tr>\n<td width="55%" valign="top"><img src="docs/screenshots/'
+        'questions.png" alt="Questions tab" width="100%"></td>\n<td width="45%" valign="top">\n\n**Keep it '
+        'private.** A < B and <br/>more\n\n</td>\n</tr>\n</table>\n<img src=x onerror=alert(1)>'
+        "<img alt='<b>x</b> [y](javascript:z)'>\n<!-- a comment --><style>p{color:red}</style>\n", "o/p", "v1.0.0")
+    assert "&lt;table" not in text and "&lt;td" not in text and "<" not in text.replace("&lt;", "")
+    assert "*Questions tab*" in text and "questions.png" not in text and "onerror" not in text
+    assert "**Keep it private.** A &lt; B and more" in text
+    assert "javascript:" not in text and "comment" not in text and "color" not in text
 
 
 def test_plugin_fields_cannot_inject_markup():
