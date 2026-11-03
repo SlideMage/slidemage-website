@@ -47,6 +47,13 @@ accurate and short (at most 120 characters per line).
 A few ids are taken: `submit` by this page, and `settings`, `secrets`, `pending`, `staging`, `old`, `state`,
 `catalogue`, `last-update-check`, `offer-seen` and `migrations-seen` by SlideMage itself.
 
+### Logging
+
+Call `host.log(message, level="info")` to write to SlideMage's own log, under the area `plugins.<id>`;
+`level` is `"debug"`, `"info"`, `"warning"` or `"error"`. `host.debug_enabled()` says whether the user has
+turned the debug log on — check it before building an expensive debug line, so the plugin stays quiet while
+the user has it off. Both need `requires_slidemage = ">=0.13.5"`.
+
 ## Releases
 
 - **Tag** `v<version>`, the same version as in `plugin.toml`.
