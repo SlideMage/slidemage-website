@@ -11,13 +11,13 @@
 
 - Claude Code installed and signed in, or an Anthropic API key
 
-Works with SlideMage &gt;=9.1.
+Works with SlideMage &gt;=0.13.31.
 
 ## Installing
 
 In SlideMage: **Settings → Plugins** or **Help → Plugins…**.
 
-By hand: download [Claude 1.0.3](https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.0.3/claude-1.0.3.smplugin) (59 kB), then choose **Settings → Plugins → Install from file…**.
+By hand: download [Claude 1.2.0](https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.2.0/claude-1.2.0.smplugin) (60 kB), then choose **Settings → Plugins → Install from file…**.
 
 ## About this plugin
 
@@ -42,12 +42,25 @@ SlideMage 9.1 or later.
 
 | Version | SlideMage | Released | Download |
 |---|---|---|---|
+| 1.2.0 | &gt;=0.13.31 | 2026-11-03 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.2.0/claude-1.2.0.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-claude/releases/tag/v1.2.0) |
 | 1.0.3 | &gt;=9.1 | 2026-10-30 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.0.3/claude-1.0.3.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-claude/releases/tag/v1.0.3) |
 | 1.0.2 | &gt;=9.1 | 2026-10-30 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.0.2/claude-1.0.2.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-claude/releases/tag/v1.0.2) |
 | 1.0.1 | &gt;=9.1 | 2026-10-29 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.0.1/claude-1.0.1.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-claude/releases/tag/v1.0.1) |
 | 1.0.0 | &gt;=9.1 | 2026-10-29 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.0.0/claude-1.0.0.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-claude/releases/tag/v1.0.0) |
 
 ## Changelog
+
+### v1.2.0
+
+*2026-11-02 · any language of the project, with SlideMage v0.13.31*
+
+Claude Code translates image descriptions into the language SlideMage asks for, not only German: ClaudeTranslationBackend has a target_lang (German by default), the prompt is the one configured for English to that language, the answer schema has short, long and takeaway, and the result says its language. Requires SlideMage v0.13.31, whose image descriptions are per language.
+
+### v1.1.0
+
+*2026-10-30 · isolated chat requests*
+
+Claude Code can answer one self-contained ai.chat request on the chosen model and effort, with tools, inherited MCP servers and settings disabled. Replies accept free text or JSON without task validation, report CLI truncation signals, and abort ends the process. The assistant conversation stays in the terminal.
 
 ### v1.0.3
 

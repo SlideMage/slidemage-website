@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated": "2026-11-03T15:12:39Z",
+  "generated": "2026-11-03T21:02:30Z",
   "plugins_page": "https://slidemage.org/plugins/",
   "plugins": [
     {
@@ -20,6 +20,16 @@
         "Anthropic: api.anthropic.com and Claude Code's own connections"
       ],
       "releases": [
+        {
+          "version": "1.2.0",
+          "api_version": 1,
+          "requires_slidemage": ">=0.13.31",
+          "url": "https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.2.0/claude-1.2.0.smplugin",
+          "sha256": "88b945b4a904b5266c31d20e067ac0baa9070d5b13630404e2b86f3daea0d8e1",
+          "size": 61814,
+          "published": "2026-11-03",
+          "notes_url": "https://github.com/SlideMage/slidemage-plugin-claude/releases/tag/v1.2.0"
+        },
         {
           "version": "1.0.3",
           "api_version": 1,
