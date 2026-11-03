@@ -14,6 +14,9 @@
 # A private theme (one carrying an institution's logo and corporate design) must never be listed here, not even
 # with hidden = true: hidden still publishes its repository URL in plugins/index-test.json.
 
+# Citation formats (biblatex styles, packed as .smcite) are approved the same way, with [[citation]] entries that
+# take the same keys as [[plugin]] (id is the format key, e.g. "ieee"; hidden works the same). None is listed yet.
+
 [[plugin]]
 id = "claude"
 repository = "SlideMage/slidemage-plugin-claude"
