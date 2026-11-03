@@ -15,15 +15,6 @@
 # with hidden = true: hidden still publishes its repository URL in plugins/index-test.json.
 
 [[plugin]]
-id = "hello"
-repository = "SlideMage/slidemage-plugin-hello"
-maintainer = "Stefan Palan"
-recommended = false
-releases = "all"
-yanked = ["0.2.0"]
-hidden = true
-
-[[plugin]]
 id = "claude"
 repository = "SlideMage/slidemage-plugin-claude"
 maintainer = "Jürgen Fleiß"
