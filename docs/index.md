@@ -24,3 +24,5 @@ SlideMage has two parts:
 ## Get started
 
 See [Download](download.md). SlideMage needs a LaTeX installation with LuaLaTeX and biber.
+
+Questions, ideas and feedback are welcome in the [SlideMage discussions](https://github.com/SlideMage/SlideMage/discussions) on GitHub.
