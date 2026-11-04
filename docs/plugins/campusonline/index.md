@@ -17,7 +17,7 @@ Works with SlideMage &gt;=9.0.
 
 In SlideMage: **Settings → Plugins** or **Help → Plugins…**.
 
-By hand: download [CampusOnline 1.0.1](https://github.com/SlideMage/slidemage-plugin-campusonline/releases/download/v1.0.1/campusonline-1.0.1.smplugin) (32 kB), then choose **Settings → Plugins → Install from file…**.
+By hand: download [CampusOnline 1.0.2](https://github.com/SlideMage/slidemage-plugin-campusonline/releases/download/v1.0.2/campusonline-1.0.2.smplugin) (32 kB), then choose **Settings → Plugins → Install from file…**.
 
 ## About this plugin
 
@@ -42,10 +42,17 @@ background renders read that file and never contact the server.
 
 | Version | SlideMage | Released | Download |
 |---|---|---|---|
+| 1.0.2 | &gt;=9.0 | 2026-11-04 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-campusonline/releases/download/v1.0.2/campusonline-1.0.2.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-campusonline/releases/tag/v1.0.2) |
 | 1.0.1 | &gt;=9.0 | 2026-10-30 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-campusonline/releases/download/v1.0.1/campusonline-1.0.1.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-campusonline/releases/tag/v1.0.1) |
 | 1.0.0 | &gt;=9.0 | 2026-10-29 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-campusonline/releases/download/v1.0.0/campusonline-1.0.0.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-campusonline/releases/tag/v1.0.0) |
 
 ## Changelog
+
+### v1.0.2
+
+*2026-11-02 · decks in any language*
+
+A deck in a language other than German or English (SlideMage from v0.13.31 reports a French deck as fr) gets the English wording everywhere: the sessions table's headings, title and translated sessions, and the course title and semester in English where the course system has them; before, the table fell back to German and kept the German sessions.
 
 ### v1.0.1
 

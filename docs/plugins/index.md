@@ -32,7 +32,7 @@ Plugins add features to SlideMage. SlideMage works without any of them; install 
     **Needs:** A CAMPUSonline course page  
     **Contacts:** The CAMPUSonline server of the linked course
 
-    Version 1.0.1 · SlideMage &gt;=9.0 · by Jürgen Fleiß
+    Version 1.0.2 · SlideMage &gt;=9.0 · by Jürgen Fleiß
 
 -   ![](exam-forge/icon.svg){ width="40" } **[Exam Forge](exam-forge/index.md)**
 

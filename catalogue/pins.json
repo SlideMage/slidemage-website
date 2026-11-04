@@ -37,6 +37,25 @@
       "published": "2026-10-30",
       "sha256": "ec991db5dfa8dfc1d46d9ea0ca734935bda90c6330b9a6068965736227423a53",
       "size": 32789
+    },
+    "1.0.2": {
+      "first_seen": "2026-11-04",
+      "manifest": {
+        "api_version": 1,
+        "license": "GPL-3.0-or-later",
+        "name": "CampusOnline",
+        "needs": [
+          "A CAMPUSonline course page"
+        ],
+        "network": [
+          "The CAMPUSonline server of the linked course"
+        ],
+        "requires_slidemage": ">=9.0",
+        "summary": "Course links, admin slides and session-aware rendering for CAMPUSonline courses."
+      },
+      "published": "2026-11-04",
+      "sha256": "4951787ccfe38044a65b75642fe4cd22377732717da00efa357749213b72c1bb",
+      "size": 32881
     }
   },
   "claude": {
