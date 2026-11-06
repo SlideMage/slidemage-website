@@ -932,7 +932,7 @@ def write_citation_pages(citations: list[dict], repositories: dict[str, str], ma
                              citation_pages.page(citation, material, repositories[citation["id"]]))
     names = {citation["id"] for citation in listed}
     for folder in CITATION_OUT.iterdir():
-        if folder.is_dir() and folder.name not in names:
+        if folder.is_dir() and folder.name not in names | {"default"}:   # "default": the built-in format's own page
             (folder / "index.md").unlink(missing_ok=True)
     write_if_changed(index, pages.replace_cards(index.read_text(encoding="utf-8"), citation_pages.cards(listed)))
 
@@ -1043,7 +1043,7 @@ def main(argv: list[str] | None = None, gh: GitHub | None = None) -> int:
     write_icons(icons, {plugin["id"] for plugin in plugins})
     write_pages(plugins, materials)
     write_previews(previews, {theme["id"] for theme in themes}, THEME_OUT)
-    write_previews(citation_previews, {citation["id"] for citation in citations}, CITATION_OUT)
+    write_previews(citation_previews, {citation["id"] for citation in citations} | {"default"}, CITATION_OUT)
     write_citation_pages(citations, repositories, citation_materials)
     write_if_changed(HEARTBEAT, f"{now:%Y-%m}\n")
     return 0

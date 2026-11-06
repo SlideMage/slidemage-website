@@ -7,8 +7,17 @@ from __future__ import annotations
 import plugin_pages as pages
 from plugin_pages import _range, changelog, defuse, inline, readme_body
 
-NO_CITATIONS = """!!! note "No citation formats listed yet"
-    The first ones are in preparation."""
+# The house format is built in, not a package: it is not in the catalogue (its id is reserved), and its page,
+# docs/citations/default/, is hand-written. Only its card is generated here, first on the page.
+BUILTIN_CARD = """-   **[SlideMage house format](default/index.md)** · *Built in*
+
+    Comes with SlideMage, nothing to install. The default: used by every deck unless a template or deck chooses
+    another format.
+
+    [![](default/preview.png){ loading=lazy }](default/index.md)
+
+    Built in: comes with SlideMage, nothing to install
+"""
 
 
 def page(citation: dict, material: dict, repo: str) -> str:
@@ -48,10 +57,9 @@ def page(citation: dict, material: dict, repo: str) -> str:
 
 
 def cards(citations: list[dict]) -> str:
-    """The cards on /citations/ for the listed formats, recommended first as the catalogue orders them."""
-    if not citations:
-        return NO_CITATIONS
-    out = ['<div class="grid cards" markdown>', ""]
+    """The cards on /citations/: the built-in house format first, then the listed formats, recommended first as the
+    catalogue orders them."""
+    out = ['<div class="grid cards" markdown>', "", BUILTIN_CARD]
     for citation in citations:
         newest = citation["releases"][0]
         recommended = " · *Recommended*" if citation["recommended"] else ""

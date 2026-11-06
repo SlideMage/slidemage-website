@@ -28,6 +28,15 @@ Or in a single deck, before `\SMUseBibliography`:
 <!-- catalogue:cards:start -->
 <div class="grid cards" markdown>
 
+-   **[SlideMage house format](default/index.md)** · *Built in*
+
+    Comes with SlideMage, nothing to install. The default: used by every deck unless a template or deck chooses
+    another format.
+
+    [![](default/preview.png){ loading=lazy }](default/index.md)
+
+    Built in: comes with SlideMage, nothing to install
+
 -   **[APA 7](apa/index.md)**
 
     Author-year citations and a reference list after APA 7 (7th edition), through biblatex-apa.

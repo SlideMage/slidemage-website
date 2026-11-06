@@ -282,3 +282,26 @@ def test_a_hidden_format_has_no_page_or_card(site):
     registry(site, CITATION + "hidden = true\n")
     assert bc.main([], gh) == 0
     assert not (folder / "ieee" / "index.md").exists() and "(ieee/index.md)" not in (folder / "index.md").read_text()
+
+
+def test_the_built_in_house_format_has_a_card_and_keeps_its_hand_written_page(site):
+    folder = _site_with_cards(site)
+    (folder / "default").mkdir()
+    (folder / "default" / "index.md").write_text("# House\n")
+    (folder / "default" / "preview.png").write_bytes(PNG)
+    gh = FakeGitHub()
+    release(gh, smcite(files={"preview.png": PNG}))
+    registry(site, CITATION)
+    for _ in range(2):          # a second run changes nothing
+        assert bc.main([], gh) == 0
+    cards = (folder / "index.md").read_text()
+    assert cards.index("(default/index.md)") < cards.index("(ieee/index.md)")
+    assert "Built in: comes with SlideMage, nothing to install" in cards
+    assert (folder / "default" / "index.md").read_text() == "# House\n"
+    assert (folder / "default" / "preview.png").read_bytes() == PNG
+    for name in ("index.json", "index-test.json"):      # never a catalogue entry
+        assert [c["id"] for c in catalogue(site, name).get("citations", [])] == ["ieee"]
+    registry(site, "")
+    assert bc.main([], gh) == 0
+    assert (folder / "default" / "index.md").exists() and "(default/index.md)" in (folder / "index.md").read_text()
+    assert "(ieee/index.md)" not in (folder / "index.md").read_text()
