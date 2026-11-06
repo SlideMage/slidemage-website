@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated": "2026-11-04T09:17:20Z",
+  "generated": "2026-11-06T12:14:44Z",
   "plugins_page": "https://slidemage.org/plugins/",
   "plugins": [
     {
@@ -192,6 +192,74 @@
           "size": 110348,
           "published": "2026-11-03",
           "notes_url": "https://github.com/SlideMage/slidemage-plugin-exam-forge/releases/tag/v0.10.2"
+        }
+      ]
+    }
+  ],
+  "citations": [
+    {
+      "id": "apa",
+      "name": "APA 7",
+      "summary": "Author-year citations and a reference list after APA 7 (7th edition), through biblatex-apa.",
+      "homepage": "https://slidemage.org/citations/apa/",
+      "source": "https://github.com/SlideMage/slidemage-citation-apa",
+      "preview": "https://slidemage.org/citations/apa/preview.png",
+      "license": "LPPL-1.3c-or-later",
+      "maintainer": "Stefan Palan",
+      "recommended": false,
+      "releases": [
+        {
+          "version": "1.0.0",
+          "requires_slidemage": ">=0.13.0",
+          "url": "https://github.com/SlideMage/slidemage-citation-apa/releases/download/v1.0.0/apa-1.0.0.smcite",
+          "sha256": "d8a571246111142db681f45d7161460aa9d50a3f654bc9c2cd75799fede03c07",
+          "size": 70195,
+          "published": "2026-11-06",
+          "notes_url": "https://github.com/SlideMage/slidemage-citation-apa/releases/tag/v1.0.0"
+        }
+      ]
+    },
+    {
+      "id": "chicago",
+      "name": "Chicago author-date",
+      "summary": "Author-date citations and a reference list after the Chicago Manual of Style, 17th ed., through biblatex-chicago.",
+      "homepage": "https://slidemage.org/citations/chicago/",
+      "source": "https://github.com/SlideMage/slidemage-citation-chicago",
+      "preview": "https://slidemage.org/citations/chicago/preview.png",
+      "license": "LPPL-1.3c-or-later",
+      "maintainer": "Stefan Palan",
+      "recommended": false,
+      "releases": [
+        {
+          "version": "1.0.0",
+          "requires_slidemage": ">=0.13.0",
+          "url": "https://github.com/SlideMage/slidemage-citation-chicago/releases/download/v1.0.0/chicago-1.0.0.smcite",
+          "sha256": "c3d55d03c30781e98a20e8f6fad9007796a833d77a5375b436459f7b86850a16",
+          "size": 73252,
+          "published": "2026-11-06",
+          "notes_url": "https://github.com/SlideMage/slidemage-citation-chicago/releases/tag/v1.0.0"
+        }
+      ]
+    },
+    {
+      "id": "harvard",
+      "name": "Harvard",
+      "summary": "Harvard author-date citations and reference list in the form of Cite Them Right, on biblatex's authoryear style.",
+      "homepage": "https://slidemage.org/citations/harvard/",
+      "source": "https://github.com/SlideMage/slidemage-citation-harvard",
+      "preview": "https://slidemage.org/citations/harvard/preview.png",
+      "license": "LPPL-1.3c-or-later",
+      "maintainer": "Stefan Palan",
+      "recommended": false,
+      "releases": [
+        {
+          "version": "1.0.0",
+          "requires_slidemage": ">=0.13.0",
+          "url": "https://github.com/SlideMage/slidemage-citation-harvard/releases/download/v1.0.0/harvard-1.0.0.smcite",
+          "sha256": "edaef8e88bf3101ae4485e24e966844f96553081f61fcca911b7017b88258d37",
+          "size": 69323,
+          "published": "2026-11-06",
+          "notes_url": "https://github.com/SlideMage/slidemage-citation-harvard/releases/tag/v1.0.0"
         }
       ]
     }

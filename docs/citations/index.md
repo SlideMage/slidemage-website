@@ -26,6 +26,31 @@ Or in a single deck, before `\SMUseBibliography`:
 ## Available citation formats
 
 <!-- catalogue:cards:start -->
-!!! note "No citation formats listed yet"
-    The first ones are in preparation.
+<div class="grid cards" markdown>
+
+-   **[APA 7](apa/index.md)**
+
+    Author-year citations and a reference list after APA 7 (7th edition), through biblatex-apa.
+
+    [![](apa/preview.png){ loading=lazy }](apa/index.md)
+
+    Version 1.0.0 · SlideMage &gt;=0.13.0 · by Stefan Palan
+
+-   **[Chicago author-date](chicago/index.md)**
+
+    Author-date citations and a reference list after the Chicago Manual of Style, 17th ed., through biblatex-chicago.
+
+    [![](chicago/preview.png){ loading=lazy }](chicago/index.md)
+
+    Version 1.0.0 · SlideMage &gt;=0.13.0 · by Stefan Palan
+
+-   **[Harvard](harvard/index.md)**
+
+    Harvard author-date citations and reference list in the form of Cite Them Right, on biblatex's authoryear style.
+
+    [![](harvard/preview.png){ loading=lazy }](harvard/index.md)
+
+    Version 1.0.0 · SlideMage &gt;=0.13.0 · by Stefan Palan
+
+</div>
 <!-- catalogue:cards:end -->

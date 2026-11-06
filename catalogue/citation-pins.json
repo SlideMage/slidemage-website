@@ -1,0 +1,44 @@
+{
+  "apa": {
+    "1.0.0": {
+      "first_seen": "2026-11-06",
+      "manifest": {
+        "license": "LPPL-1.3c-or-later",
+        "name": "APA 7",
+        "requires_slidemage": ">=0.13.0",
+        "summary": "Author-year citations and a reference list after APA 7 (7th edition), through biblatex-apa."
+      },
+      "published": "2026-11-06",
+      "sha256": "d8a571246111142db681f45d7161460aa9d50a3f654bc9c2cd75799fede03c07",
+      "size": 70195
+    }
+  },
+  "chicago": {
+    "1.0.0": {
+      "first_seen": "2026-11-06",
+      "manifest": {
+        "license": "LPPL-1.3c-or-later",
+        "name": "Chicago author-date",
+        "requires_slidemage": ">=0.13.0",
+        "summary": "Author-date citations and a reference list after the Chicago Manual of Style, 17th ed., through biblatex-chicago."
+      },
+      "published": "2026-11-06",
+      "sha256": "c3d55d03c30781e98a20e8f6fad9007796a833d77a5375b436459f7b86850a16",
+      "size": 73252
+    }
+  },
+  "harvard": {
+    "1.0.0": {
+      "first_seen": "2026-11-06",
+      "manifest": {
+        "license": "LPPL-1.3c-or-later",
+        "name": "Harvard",
+        "requires_slidemage": ">=0.13.0",
+        "summary": "Harvard author-date citations and reference list in the form of Cite Them Right, on biblatex's authoryear style."
+      },
+      "published": "2026-11-06",
+      "sha256": "edaef8e88bf3101ae4485e24e966844f96553081f61fcca911b7017b88258d37",
+      "size": 69323
+    }
+  }
+}
