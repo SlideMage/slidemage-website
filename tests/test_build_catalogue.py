@@ -73,7 +73,7 @@ class FakeGitHub:
 
 @pytest.fixture
 def site(tmp_path, monkeypatch):
-    for name in ("REGISTRY", "PINS", "HEARTBEAT", "OUT", "MKDOCS"):
+    for name in ("REGISTRY", "PINS", "CITATION_PINS", "HEARTBEAT", "OUT", "CITATION_OUT", "MKDOCS"):
         monkeypatch.setattr(bc, name, tmp_path / getattr(bc, name).relative_to(ROOT))
     (tmp_path / "registry").mkdir()
     (tmp_path / "docs" / "plugins").mkdir(parents=True)

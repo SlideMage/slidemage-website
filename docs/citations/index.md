@@ -25,4 +25,7 @@ Or in a single deck, before `\SMUseBibliography`:
 
 ## Available citation formats
 
-No citation formats listed yet.
+<!-- catalogue:cards:start -->
+!!! note "No citation formats listed yet"
+    The first ones are in preparation.
+<!-- catalogue:cards:end -->

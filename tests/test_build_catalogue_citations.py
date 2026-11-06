@@ -245,3 +245,40 @@ def test_a_replaced_citation_asset_is_dropped_and_reported(site, tmp_path):
 def test_an_invalid_citation_registry_fails_the_whole_run(site, text):
     registry(site, text)
     assert bc.main([], FakeGitHub()) == 1
+
+
+# --- per-format pages and cards -------------------------------------------------------------------------------------
+
+
+def _site_with_cards(site):
+    index = site / "docs" / "citations"
+    index.mkdir(parents=True, exist_ok=True)
+    shutil.copy(ROOT / "docs" / "citations" / "index.md", index / "index.md")
+    return index
+
+
+def test_a_listed_format_gets_a_page_and_a_card_and_loses_both_when_it_goes(site):
+    folder = _site_with_cards(site)
+    gh = FakeGitHub()
+    release(gh, smcite(files={"preview.png": PNG}))
+    gh.files[("o/ieee", "v1.0.0", "README.md")] = b"# A\n\nAPA <script>x</script> [l](javascript:x)\n\n## Development\n\nn\n"
+    registry(site, CITATION)
+    assert bc.main([], gh) == 0
+    page = (folder / "ieee" / "index.md").read_text()
+    assert "# IEEE" in page and "![The reference list of IEEE on a slide](preview.png)" in page
+    assert "SMCitationFormat}{ieee}" in page and "ieee-1.0.0.smcite" in page
+    assert "<script>" not in page and "javascript:" not in page and "Development" not in page
+    cards = (folder / "index.md").read_text()
+    assert "(ieee/index.md)" in cards and "ieee/preview.png" in cards
+    registry(site, "")
+    assert bc.main([], gh) == 0
+    assert not (folder / "ieee" / "index.md").exists() and "(ieee/index.md)" not in (folder / "index.md").read_text()
+
+
+def test_a_hidden_format_has_no_page_or_card(site):
+    folder = _site_with_cards(site)
+    gh = FakeGitHub()
+    release(gh, smcite())
+    registry(site, CITATION + "hidden = true\n")
+    assert bc.main([], gh) == 0
+    assert not (folder / "ieee" / "index.md").exists() and "(ieee/index.md)" not in (folder / "index.md").read_text()

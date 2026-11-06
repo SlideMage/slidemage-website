@@ -13,8 +13,9 @@ no theme pages or cards.
 
 Citation formats (biblatex styles, [[citation]] in the registry, packed as .smcite) are listed the same way under
 "citations", with the same "only when there is one" rule. Their pins go to catalogue/citation-pins.json, the
-preview.png inside a package to docs/citations/<id>/preview.png; there are no per-format pages or cards either,
-just the hand-written docs/citations/index.md.
+preview.png inside a package to docs/citations/<id>/preview.png. Each listed format also gets a page,
+docs/citations/<id>/index.md (tools/citation_pages.py), and a card on the hand-written docs/citations/index.md,
+between its catalogue:cards markers.
 
     python tools/build_catalogue.py                 build and write
     python tools/build_catalogue.py --full-check    also re-hash every pinned asset (once a day)
@@ -42,6 +43,7 @@ import zipfile
 from pathlib import Path
 from typing import NamedTuple
 
+import citation_pages
 import plugin_pages as pages
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -916,6 +918,25 @@ def write_pages(plugins: list[dict], materials: dict) -> None:
     write_if_changed(index, pages.replace_cards(index.read_text(encoding="utf-8"), pages.cards(listed)))
 
 
+def write_citation_pages(citations: list[dict], repositories: dict[str, str], materials: dict) -> None:
+    """The listed citation formats' pages (docs/citations/<id>/index.md) and the cards on docs/citations/index.md;
+    pages of formats no longer listed go. Touches nothing when docs/citations/index.md does not exist."""
+    index = CITATION_OUT / "index.md"
+    if not index.exists():
+        return
+    listed = [citation for citation in citations if not citation["_hidden"]]
+    for citation in listed:
+        material = materials.get(citation["id"])
+        if material:
+            write_if_changed(CITATION_OUT / citation["id"] / "index.md",
+                             citation_pages.page(citation, material, repositories[citation["id"]]))
+    names = {citation["id"] for citation in listed}
+    for folder in CITATION_OUT.iterdir():
+        if folder.is_dir() and folder.name not in names:
+            (folder / "index.md").unlink(missing_ok=True)
+    write_if_changed(index, pages.replace_cards(index.read_text(encoding="utf-8"), citation_pages.cards(listed)))
+
+
 def site_url() -> str:
     match = re.search(r"^site_url:\s*(\S+)", MKDOCS.read_text(encoding="utf-8"), re.MULTILINE)
     if not match or not match.group(1).startswith("https://"):
@@ -980,6 +1001,11 @@ def main(argv: list[str] | None = None, gh: GitHub | None = None) -> int:
     citations, citation_previews = build_citations(citation_registry, gh, citation_pins,
                                                     previous_entries("citations"), base, now.date().isoformat(),
                                                     args.full_check, report)
+    repositories = {entry["id"]: entry["repository"] for entry in citation_registry}
+    citation_materials = {citation["id"]: fetch_material({"id": citation["id"],
+                                                          "repository": repositories[citation["id"]]},
+                                                         f"v{citation['releases'][0]['version']}", gh, report)
+                          for citation in citations if not citation["_hidden"]}
     stamp = now.isoformat().replace("+00:00", "Z")
     public = catalogue(plugins, base, stamp, False, themes, citations)
     test = catalogue(plugins, base, stamp, True, themes, citations)
@@ -1018,6 +1044,7 @@ def main(argv: list[str] | None = None, gh: GitHub | None = None) -> int:
     write_pages(plugins, materials)
     write_previews(previews, {theme["id"] for theme in themes}, THEME_OUT)
     write_previews(citation_previews, {citation["id"] for citation in citations}, CITATION_OUT)
+    write_citation_pages(citations, repositories, citation_materials)
     write_if_changed(HEARTBEAT, f"{now:%Y-%m}\n")
     return 0
 
