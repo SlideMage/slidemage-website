@@ -46,4 +46,5 @@ nav:
   - Plugins:
       - plugins/index.md
       - Submit a plugin: plugins/submit.md
+  - Citation formats: citations/index.md
   - About: about.md

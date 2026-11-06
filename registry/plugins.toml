@@ -11,6 +11,8 @@
 
 # Themes (slide templates, packed as .smtheme) are approved the same way, with [[theme]] entries that take the
 # same keys as [[plugin]] (id is the template key, e.g. "uni-graz"; hidden works the same). None is listed yet.
+# Citation formats (how references look, packed as .smcite) are approved with [[citation]] entries, again with the same
+# keys (id is the format's key; "default" is the one SlideMage ships and cannot be listed).
 # A private theme (one carrying an institution's logo and corporate design) must never be listed here, not even
 # with hidden = true: hidden still publishes its repository URL in plugins/index-test.json.
 
@@ -43,6 +45,30 @@ yanked = []
 id = "campusonline"
 repository = "SlideMage/slidemage-plugin-campusonline"
 maintainer = "Jürgen Fleiß"
+recommended = false
+releases = "all"
+yanked = []
+
+[[citation]]
+id = "apa"
+repository = "SlideMage/slidemage-citation-apa"
+maintainer = "Stefan Palan"
+recommended = false
+releases = "all"
+yanked = []
+
+[[citation]]
+id = "chicago"
+repository = "SlideMage/slidemage-citation-chicago"
+maintainer = "Stefan Palan"
+recommended = false
+releases = "all"
+yanked = []
+
+[[citation]]
+id = "harvard"
+repository = "SlideMage/slidemage-citation-harvard"
+maintainer = "Stefan Palan"
 recommended = false
 releases = "all"
 yanked = []

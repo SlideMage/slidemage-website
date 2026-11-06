@@ -80,7 +80,7 @@ jobs:
       - name: Commit
         id: commit
         run: |
-          git add catalogue docs/plugins
+          git add -A catalogue docs/plugins docs/themes docs/citations
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0

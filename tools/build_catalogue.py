@@ -11,6 +11,11 @@ Themes (SlideMage slide templates, [[theme]] in the registry, packed as .smtheme
 pins go to catalogue/theme-pins.json, the preview.png inside a package to docs/themes/<id>/preview.png; there are
 no theme pages or cards.
 
+Citation formats (how references look, [[citation]] in the registry, packed as .smcite) are listed the same way
+under "citations", again only when there is one. Their pins go to catalogue/citation-pins.json, the preview.png
+inside a package to docs/citations/<id>/preview.png, and each listed format gets a page, docs/citations/<id>/
+index.md, and a card on docs/citations/index.md (tools/citation_pages.py).
+
     python tools/build_catalogue.py                 build and write
     python tools/build_catalogue.py --full-check    also re-hash every pinned asset (once a day)
     python tools/build_catalogue.py --check         build and validate, write nothing (pull requests)
@@ -37,6 +42,7 @@ import zipfile
 from pathlib import Path
 from typing import NamedTuple
 
+import citation_pages
 import plugin_pages as pages
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -47,6 +53,8 @@ THEME_PINS = ROOT / "catalogue" / "theme-pins.json"
 HEARTBEAT = ROOT / "catalogue" / "last-run.txt"
 OUT = ROOT / "docs" / "plugins"
 THEME_OUT = ROOT / "docs" / "themes"
+CITATION_PINS = ROOT / "catalogue" / "citation-pins.json"
+CITATION_OUT = ROOT / "docs" / "citations"
 MKDOCS = ROOT / "mkdocs.yml"
 
 ID_RE = re.compile(r"^[a-z][a-z0-9-]{1,31}$")
@@ -64,6 +72,12 @@ RESERVED_THEME_IDS = {
     "submit": "a page of the website",
     **dict.fromkeys(("slidemage", "greyscale"), "a template SlideMage ships"),
 }
+# Ids no citation format may have: the format SlideMage ships (a package cannot replace it; the app reads the keys
+# of its latex/SlideMage_citation_*.tex, today only "default") and "submit", where a page would go.
+RESERVED_CITATION_IDS = {
+    "submit": "a page of the website",
+    "default": "the citation format SlideMage ships",
+}
 VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
 TAG_RE = re.compile(r"^v(\d+\.\d+\.\d+)$")
 RANGE_RE = re.compile(r"^(>=|<=|==|<|>)\s*\d+(\.\d+){0,2}(\s*,\s*(>=|<=|==|<|>)\s*\d+(\.\d+){0,2})*$")
@@ -80,6 +94,11 @@ THEME_MANIFEST_KEYS = ("name", "summary", "license", "requires_slidemage", "layo
 # ahead of the TeX distribution, so a .sty in it would replace a package of the same name for every deck.
 TEX_CODE = (".tex", ".sty", ".cls", ".lua", ".def", ".cfg", ".fd", ".clo", ".ltx", ".dtx", ".ins")
 THEME_REFUSED_KEYS = ("api_version", "needs", "network")
+CITATION_MANIFEST_KEYS = ("name", "summary", "license", "requires_slidemage")
+CITATION_REFUSED_KEYS = ("api_version", "needs", "network", "layout")
+CITATION_FILES = {"citation.toml", "LICENSE", "README.md", "CHANGELOG.md", "preview.png"}
+# Extra TeX files of a format, named after it so they never shadow a stock style (the app's citations.py).
+CITATION_EXTRA_SUFFIXES = (".tex", ".bbx", ".cbx", ".dbx", ".lbx")
 THEME_FILES = {"theme.toml", "LICENSE", "README.md", "CHANGELOG.md", "preview.png"}
 STANDARD_LAYOUTS = ("fira", "lmsans", "lmroman")
 LAYOUT_RE = re.compile(r"^[a-z][a-z0-9-]{0,31}$")   # as the app's themes.LAYOUT_RE
@@ -159,8 +178,8 @@ def version_key(version: str) -> tuple[int, ...]:
 
 
 def load_registry(text: str, table: str = "plugin") -> list[dict]:
-    """The [[plugin]] entries of the registry, or with table="theme" its [[theme]] entries (same keys)."""
-    reserved = RESERVED_IDS if table == "plugin" else RESERVED_THEME_IDS
+    """The [[plugin]] entries of the registry, or with table="theme" / "citation" its [[theme]] / [[citation]] entries (same keys)."""
+    reserved = {"plugin": RESERVED_IDS, "theme": RESERVED_THEME_IDS, "citation": RESERVED_CITATION_IDS}[table]
     try:
         entries = tomllib.loads(text).get(table, [])
     except tomllib.TOMLDecodeError as exc:
@@ -332,15 +351,93 @@ def inspect_theme(data: bytes, tid: str, version: str) -> tuple[dict | None, lis
     return (None if problems else manifest), problems
 
 
-def theme_preview(data: bytes, tid: str, version: str, report: Report) -> bytes | None:
-    """preview.png from inside a .smtheme; None when there is none or it cannot be used."""
+def check_citation_manifest(manifest: dict, cid: str, version: str) -> list[str]:
+    """What is wrong with a citation.toml; empty when nothing is."""
+    problems = []
+    refused = [key for key in CITATION_REFUSED_KEYS if key in manifest]
+    if refused:
+        problems.append(f"citation.toml has {', '.join(refused)}: a citation format runs no Python and has no layout")
+    if manifest.get("id") != cid:
+        problems.append(f"id is {manifest.get('id')!r}, the registry has {cid!r}")
+    if manifest.get("version") != version:
+        problems.append(f"version is {manifest.get('version')!r}, the tag has {version!r}")
+    for key, longest in (("name", 40), ("summary", 120), ("author", 200), ("license", 200)):
+        check_text(manifest, key, longest, problems)
+    span = manifest.get("requires_slidemage")
+    if not isinstance(span, str) or not RANGE_RE.match(span):
+        problems.append("requires_slidemage is not a version range")
+    homepage = manifest.get("homepage")
+    if not isinstance(homepage, str) or not homepage.startswith(("https://", "http://")):
+        problems.append("homepage must be an http or https URL")
+    return problems
+
+
+def check_citation_members(archive: zipfile.ZipFile, cid: str) -> list[str]:
+    """What is wrong with the files of a .smcite: paths, links, compiled files, TeX code other than the format's own
+    (an installed format sits on TeX's search path ahead of the TeX distribution and of SlideMage's framework, so
+    a file named like either would replace it for every deck), what must be there."""
+    main = f"SlideMage_citation_{cid}.tex"
+    own = f"SlideMage_citation_{cid}_"
+    unsafe, compiled, framework, code, strays = [], [], [], [], []
+    for info in archive.infolist():
+        name = info.filename
+        # orig_filename: on Windows zipfile turns a backslash in filename into a slash
+        if (name.startswith("/") or re.match(r"^[A-Za-z]:", name) or "\\" in info.orig_filename
+                or ".." in name.split("/") or (info.external_attr >> 16) & 0o170000 == 0o120000):
+            unsafe.append(name)
+        elif name.endswith("/"):
+            continue
+        elif name.lower().endswith(COMPILED):
+            compiled.append(name)
+        elif name == main or name in CITATION_FILES or name.startswith("LICENSES/"):
+            continue
+        elif name.startswith(own) and "/" not in name and name.endswith(CITATION_EXTRA_SUFFIXES):
+            continue
+        elif name.startswith("SlideMage_") and "/" not in name:
+            framework.append(name)   # SlideMage_citation_default.tex, SlideMage_base.tex, a layout profile, ...
+        elif name.lower().endswith(TEX_CODE + (".bst", ".bbx", ".cbx", ".dbx", ".lbx")):
+            code.append(name)
+        else:
+            strays.append(name)
+    names = set(archive.namelist())
+    problems = []
+    for found, what in ((unsafe, "paths or links outside the package"), (compiled, "compiled files"),
+                        (framework, "files named like SlideMage's own framework files"),
+                        (code, f"TeX code besides {main} and files named {own}*"),
+                        (strays, "files a citation package does not have")):
+        if found:
+            problems.append(f"{what}: {', '.join(found[:3])}")
+    for required in (main, "citation.toml", "LICENSE", "README.md", "CHANGELOG.md"):
+        if required not in names:
+            problems.append(f"no {required} in the asset")
+    return problems
+
+
+def inspect_citation(data: bytes, cid: str, version: str) -> tuple[dict | None, list[str]]:
+    """The citation.toml of a downloaded .smcite, or the problems that refuse it."""
+    try:
+        archive = zipfile.ZipFile(io.BytesIO(data))
+    except zipfile.BadZipFile:
+        return None, ["the asset is not a zip file"]
+    if "citation.toml" not in archive.namelist():
+        return None, ["no citation.toml at the root of the asset"]
+    try:
+        manifest = tomllib.loads(archive.read("citation.toml").decode("utf-8"))
+    except (UnicodeDecodeError, tomllib.TOMLDecodeError) as exc:
+        return None, [f"citation.toml does not parse: {exc}"]
+    problems = check_citation_manifest(manifest, cid, version) + check_citation_members(archive, cid)
+    return (None if problems else manifest), problems
+
+
+def theme_preview(data: bytes, tid: str, version: str, report: Report, prefix: str = "theme ") -> bytes | None:
+    """preview.png from inside a .smtheme (or .smcite); None when there is none or it cannot be used."""
     with zipfile.ZipFile(io.BytesIO(data)) as archive:
         if "preview.png" not in archive.namelist():
             return None
         info = archive.getinfo("preview.png")
         picture = archive.read(info) if info.file_size <= PREVIEW_BYTES else b""
     if picture[:8] != PNG:
-        report.add("refused", f"theme {tid}", version, "preview.png is not a PNG of at most 1 MB; no preview")
+        report.add("refused", f"{prefix}{tid}", version, "preview.png is not a PNG of at most 1 MB; no preview")
         return None
     return picture
 
@@ -355,6 +452,7 @@ class Kind(NamedTuple):
 
 PLUGIN = Kind("", ".smplugin", inspect_asset, MANIFEST_KEYS)
 THEME = Kind("theme ", ".smtheme", inspect_theme, THEME_MANIFEST_KEYS)
+CITATION = Kind("citation ", ".smcite", inspect_citation, CITATION_MANIFEST_KEYS)
 
 
 def check_icon(path: str, data: bytes) -> str | None:
@@ -475,7 +573,7 @@ def pin_new(entry: dict, version: str, release: dict, assets: dict, gh: GitHub, 
         report.add("refused", who, version, "; ".join(problems))
         return None
     if previews is not None:
-        previews[version] = theme_preview(data, pid, version, report)
+        previews[version] = theme_preview(data, pid, version, report, kind.prefix)
     return {"sha256": digest, "size": len(data), "published": release["published_at"][:10], "first_seen": today,
             "manifest": {key: manifest[key] for key in kind.keys}}
 
@@ -582,13 +680,16 @@ def build(registry: list[dict], gh: GitHub, pins: dict, previous: dict[str, dict
 
 
 def build_themes(registry: list[dict], gh: GitHub, pins: dict, previous: dict[str, dict], site_url: str,
-                 today: str, full_check: bool, report: Report) -> tuple[list[dict], dict]:
-    """Catalogue entries for every registry theme with a listable release (hidden ones carry "_hidden"), and the
+                 today: str, full_check: bool, report: Report, kind: Kind = THEME,
+                 section: str = "themes") -> tuple[list[dict], dict]:
+    """Catalogue entries for every registry theme (or with kind=CITATION, citation format) with a listable release
+    (hidden ones carry "_hidden"; a theme has a "layout", a citation format none; a citation format also carries
+    "_repository", for its page), and the
     previews to write: {id: bytes | None (none) | False (keep what is there)}. A preview is read from a package
     only when its version is pinned, so the newest version's preview stays until a newer one replaces it."""
     themes, previews = [], {}
     for entry in registry:
-        tid, who = entry["id"], f"theme {entry['id']}"
+        tid, who = entry["id"], f"{kind.prefix}{entry['id']}"
         try:
             releases = gh.releases(entry["repository"])
         except NETWORK_ERRORS as exc:
@@ -598,7 +699,7 @@ def build_themes(registry: list[dict], gh: GitHub, pins: dict, previous: dict[st
                 previews[tid] = False
             continue
         found = {}
-        listed = list_releases(entry, releases, gh, pins, today, full_check, report, THEME, found)
+        listed = list_releases(entry, releases, gh, pins, today, full_check, report, kind, found)
         if not listed:
             report.add("error", who, None, "no release can be listed")
             continue
@@ -608,12 +709,13 @@ def build_themes(registry: list[dict], gh: GitHub, pins: dict, previous: dict[st
             "id": tid,
             "name": manifest["name"],
             "summary": manifest["summary"],
-            "homepage": f"{site_url}themes/{tid}/",
+            "homepage": f"{site_url}{section}/{tid}/",
             "source": f"https://github.com/{entry['repository']}",
             "license": manifest["license"],
             "maintainer": entry["maintainer"],
             "recommended": entry.get("recommended", False),
-            "layout": manifest["layout"],
+            **({"layout": manifest["layout"]} if "layout" in manifest else {}),
+            "_repository": entry["repository"],
             "releases": [release for release, _ in listed],
             "_hidden": entry.get("hidden", False),
         }
@@ -621,13 +723,14 @@ def build_themes(registry: list[dict], gh: GitHub, pins: dict, previous: dict[st
         if previews[tid] is False and "preview" in previous.get(tid, {}):
             theme["preview"] = previous[tid]["preview"]
         elif previews[tid]:
-            theme["preview"] = f"{site_url}themes/{tid}/preview.png"
+            theme["preview"] = f"{site_url}{section}/{tid}/preview.png"
         themes.append(theme)
     themes.sort(key=lambda theme: (not theme["recommended"], theme["name"].lower()))
     return themes, previews
 
 
-def catalogue(plugins: list[dict], site_url: str, now: str, hidden: bool, themes: list[dict] = ()) -> dict:
+def catalogue(plugins: list[dict], site_url: str, now: str, hidden: bool, themes: list[dict] = (),
+              citations: list[dict] = ()) -> dict:
     keys = ("id", "name", "summary", "homepage", "source", "icon", "license", "maintainer", "recommended",
             "needs", "network", "releases")
     theme_keys = ("id", "name", "summary", "homepage", "source", "preview", "license", "maintainer", "recommended",
@@ -643,6 +746,10 @@ def catalogue(plugins: list[dict], site_url: str, now: str, hidden: bool, themes
              for theme in themes if hidden or not theme["_hidden"]]
     if shown:   # no "themes" key until there is a theme to list
         doc["themes"] = shown
+    cited = [{key: citation[key] for key in theme_keys if key in citation and key != "layout"}
+             for citation in citations if hidden or not citation["_hidden"]]
+    if cited:   # nor a "citations" key until there is a citation format
+        doc["citations"] = cited
     return doc
 
 
@@ -688,11 +795,12 @@ def write_icons(icons: dict, keep: set[str]) -> None:
                 old.unlink()
 
 
-def write_previews(previews: dict, keep: set[str]) -> None:
-    """Copy the themes' previews to docs/themes/<id>/preview.png; previews of themes no longer in the catalogue
-    go. Touches nothing without a theme."""
+def write_previews(previews: dict, keep: set[str], out: Path | None = None) -> None:
+    """Copy the themes' (or, with out=CITATION_OUT, the citation formats') previews to <out>/<id>/preview.png;
+    previews of those no longer in the catalogue go. Touches nothing without any."""
+    out = out or THEME_OUT
     for tid, picture in previews.items():
-        path = THEME_OUT / tid / "preview.png"
+        path = out / tid / "preview.png"
         if picture is False:
             continue
         if not picture:
@@ -700,8 +808,8 @@ def write_previews(previews: dict, keep: set[str]) -> None:
         elif not path.exists() or path.read_bytes() != picture:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(picture)
-    if THEME_OUT.exists():
-        for folder in THEME_OUT.iterdir():
+    if out.exists():
+        for folder in out.iterdir():
             if folder.is_dir() and folder.name not in keep:
                 (folder / "preview.png").unlink(missing_ok=True)
 
@@ -734,6 +842,25 @@ def write_pages(plugins: list[dict], materials: dict) -> None:
     write_if_changed(index, pages.replace_cards(index.read_text(encoding="utf-8"), pages.cards(listed)))
 
 
+def write_citation_pages(citations: list[dict], materials: dict) -> None:
+    """The listed citation formats' pages and the cards on /citations/; pages of formats no longer listed go.
+    Touches nothing without any."""
+    index = CITATION_OUT / "index.md"
+    if not index.exists():
+        return
+    listed = [citation for citation in citations if not citation["_hidden"]]
+    for citation in listed:
+        material = materials.get(citation["id"])
+        if material:
+            write_if_changed(CITATION_OUT / citation["id"] / "index.md",
+                             citation_pages.page(citation, material, citation["_repository"]))
+    names = {citation["id"] for citation in listed}
+    for folder in CITATION_OUT.iterdir():
+        if folder.is_dir() and folder.name not in names:
+            (folder / "index.md").unlink(missing_ok=True)
+    write_if_changed(index, pages.replace_cards(index.read_text(encoding="utf-8"), citation_pages.cards(listed)))
+
+
 def site_url() -> str:
     match = re.search(r"^site_url:\s*(\S+)", MKDOCS.read_text(encoding="utf-8"), re.MULTILINE)
     if not match or not match.group(1).startswith("https://"):
@@ -748,7 +875,7 @@ def previous_entries(key: str = "plugins") -> dict[str, dict]:
     return {entry["id"]: entry for entry in json.loads(path.read_text(encoding="utf-8")).get(key, [])}
 
 
-def summary(report: Report, plugins: list[dict], themes: list[dict] = ()) -> str:
+def summary(report: Report, plugins: list[dict], themes: list[dict] = (), citations: list[dict] = ()) -> str:
     lines = ["## Plugin catalogue", ""]
     for plugin in plugins:
         hidden = " (hidden)" if plugin["_hidden"] else ""
@@ -758,6 +885,11 @@ def summary(report: Report, plugins: list[dict], themes: list[dict] = ()) -> str
         for theme in themes:
             hidden = " (hidden)" if theme["_hidden"] else ""
             lines.append(f"- **{theme['id']}**{hidden}: {', '.join(r['version'] for r in theme['releases'])}")
+    if citations:
+        lines += ["", "### Citation formats", ""]
+        for citation in citations:
+            hidden = " (hidden)" if citation["_hidden"] else ""
+            lines.append(f"- **{citation['id']}**{hidden}: {', '.join(r['version'] for r in citation['releases'])}")
     if report.problems:
         lines += ["", "### Problems", ""]
         lines += [f"- {p['kind']}: {p['plugin']} {p['version'] or ''}: {p['message']}" for p in report.problems]
@@ -777,25 +909,34 @@ def main(argv: list[str] | None = None, gh: GitHub | None = None) -> int:
     try:
         registry = load_registry(REGISTRY.read_text(encoding="utf-8"))
         theme_registry = load_registry(REGISTRY.read_text(encoding="utf-8"), "theme")
+        citation_registry = load_registry(REGISTRY.read_text(encoding="utf-8"), "citation")
         base = site_url()
     except RegistryError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
     pins = json.loads(PINS.read_text(encoding="utf-8")) if PINS.exists() else {}
     theme_pins = json.loads(THEME_PINS.read_text(encoding="utf-8")) if THEME_PINS.exists() else {}
+    citation_pins = json.loads(CITATION_PINS.read_text(encoding="utf-8")) if CITATION_PINS.exists() else {}
     plugins, icons, materials = build(registry, gh, pins, previous_entries(), base, now.date().isoformat(),
                                       args.full_check, report)
     themes, previews = build_themes(theme_registry, gh, theme_pins, previous_entries("themes"), base,
                                     now.date().isoformat(), args.full_check, report)
+    citations, citation_previews = build_themes(citation_registry, gh, citation_pins, previous_entries("citations"),
+                                                base, now.date().isoformat(), args.full_check, report, CITATION,
+                                                "citations")
+    citation_materials = {citation["id"]: fetch_material({"id": citation["id"], "repository": citation["_repository"]},
+                                                          f"v{citation['releases'][0]['version']}", gh, report)
+                          for citation in citations if not citation["_hidden"]}
     stamp = now.isoformat().replace("+00:00", "Z")
-    public, test = catalogue(plugins, base, stamp, False, themes), catalogue(plugins, base, stamp, True, themes)
+    public = catalogue(plugins, base, stamp, False, themes, citations)
+    test = catalogue(plugins, base, stamp, True, themes, citations)
     invalid = validate(public) + validate(test)
 
     if args.report:
         args.report.write_text(json.dumps({"problems": report.problems}, indent=2) + "\n", encoding="utf-8")
     if os.environ.get("GITHUB_STEP_SUMMARY"):
         with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as handle:
-            handle.write(summary(report, plugins, themes))
+            handle.write(summary(report, plugins, themes, citations))
     if invalid:
         print("error: the catalogue does not match the schema:\n  " + "\n  ".join(invalid), file=sys.stderr)
         return 1
@@ -804,6 +945,9 @@ def main(argv: list[str] | None = None, gh: GitHub | None = None) -> int:
         missing = [entry["id"] for entry in registry if entry["id"] not in listed]
         listed_themes = {theme["id"] for theme in themes}
         missing += [f"theme {entry['id']}" for entry in theme_registry if entry["id"] not in listed_themes]
+        listed_citations = {citation["id"] for citation in citations}
+        missing += [f"citation {entry['id']}" for entry in citation_registry
+                    if entry["id"] not in listed_citations]
         if missing:
             print(f"error: no listable release for {', '.join(missing)}", file=sys.stderr)
             return 1
@@ -812,11 +956,15 @@ def main(argv: list[str] | None = None, gh: GitHub | None = None) -> int:
     write_if_changed(PINS, json.dumps(pins, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
     if any(theme_pins.values()) or THEME_PINS.exists():   # created only when there is something to pin
         write_if_changed(THEME_PINS, json.dumps(theme_pins, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
+    if any(citation_pins.values()) or CITATION_PINS.exists():
+        write_if_changed(CITATION_PINS, json.dumps(citation_pins, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
     write_catalogue(OUT / "index.json", public)
     write_catalogue(OUT / "index-test.json", test)
     write_icons(icons, {plugin["id"] for plugin in plugins})
     write_pages(plugins, materials)
     write_previews(previews, {theme["id"] for theme in themes})
+    write_previews(citation_previews, {citation["id"] for citation in citations}, CITATION_OUT)
+    write_citation_pages(citations, citation_materials)
     write_if_changed(HEARTBEAT, f"{now:%Y-%m}\n")
     return 0
 

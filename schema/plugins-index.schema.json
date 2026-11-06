@@ -8,7 +8,8 @@
     "generated": {"type": "string", "format": "date-time"},
     "plugins_page": {"type": "string", "format": "uri", "pattern": "^https://"},
     "plugins": {"type": "array", "items": {"$ref": "#/$defs/plugin"}},
-    "themes": {"type": "array", "items": {"$ref": "#/$defs/theme"}}
+    "themes": {"type": "array", "items": {"$ref": "#/$defs/theme"}},
+    "citations": {"type": "array", "items": {"$ref": "#/$defs/citation"}}
   },
   "$defs": {
     "https": {"type": "string", "format": "uri", "pattern": "^https://"},
@@ -64,6 +65,23 @@
         "layout": {"type": "string", "minLength": 1},
         "releases": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/theme_release"}}
       }
+    },
+    "citation": {
+      "type": "object",
+      "required": ["id", "name", "summary", "homepage", "source", "license", "maintainer", "recommended", "releases"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,31}$"},
+        "name": {"type": "string", "minLength": 1, "maxLength": 40},
+        "summary": {"type": "string", "minLength": 1, "maxLength": 120},
+        "homepage": {"$ref": "#/$defs/https"},
+        "source": {"$ref": "#/$defs/https"},
+        "preview": {"$ref": "#/$defs/https"},
+        "license": {"type": "string", "minLength": 1},
+        "maintainer": {"type": "string", "minLength": 1},
+        "recommended": {"type": "boolean"},
+        "releases": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/theme_release"}}
+      },
+      "additionalProperties": false
     },
     "theme_release": {
       "type": "object",
