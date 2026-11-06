@@ -45,7 +45,8 @@ def smtheme(tid="uni-graz", version="1.0.0", files=None, drop=(), manifest_drop=
 
 @pytest.fixture
 def site(tmp_path, monkeypatch):
-    for name in ("REGISTRY", "PINS", "THEME_PINS", "HEARTBEAT", "OUT", "THEME_OUT", "MKDOCS"):
+    for name in ("REGISTRY", "PINS", "THEME_PINS", "CITATION_PINS", "HEARTBEAT", "OUT", "THEME_OUT", "CITATION_OUT",
+                 "MKDOCS"):
         monkeypatch.setattr(bc, name, tmp_path / getattr(bc, name).relative_to(ROOT))
     (tmp_path / "registry").mkdir()
     (tmp_path / "docs" / "plugins").mkdir(parents=True)
