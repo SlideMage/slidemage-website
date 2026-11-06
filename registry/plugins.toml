@@ -48,3 +48,27 @@ maintainer = "Jürgen Fleiß"
 recommended = false
 releases = "all"
 yanked = []
+
+[[citation]]
+id = "apa"
+repository = "SlideMage/slidemage-citation-apa"
+maintainer = "Stefan Palan"
+recommended = false
+releases = "all"
+yanked = []
+
+[[citation]]
+id = "chicago"
+repository = "SlideMage/slidemage-citation-chicago"
+maintainer = "Stefan Palan"
+recommended = false
+releases = "all"
+yanked = []
+
+[[citation]]
+id = "harvard"
+repository = "SlideMage/slidemage-citation-harvard"
+maintainer = "Stefan Palan"
+recommended = false
+releases = "all"
+yanked = []

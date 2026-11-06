@@ -25,4 +25,9 @@ Or in a single deck, before `\SMUseBibliography`:
 
 ## Available citation formats
 
-No citation formats listed yet.
+- **APA 7**: author-year citations and a reference list after the 7th edition
+  ([source and README](https://github.com/SlideMage/slidemage-citation-apa)), key `apa`.
+- **Chicago author-date**: after the Chicago Manual of Style, 17th edition
+  ([source and README](https://github.com/SlideMage/slidemage-citation-chicago)), key `chicago`.
+- **Harvard**: in the form of *Cite Them Right*
+  ([source and README](https://github.com/SlideMage/slidemage-citation-harvard)), key `harvard`.
