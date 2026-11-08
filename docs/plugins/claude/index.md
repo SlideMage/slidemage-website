@@ -17,7 +17,7 @@ Works with SlideMage &gt;=0.13.31.
 
 In SlideMage: **Settings → Plugins** or **Help → Plugins…**.
 
-By hand: download [Claude 1.2.0](https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.2.0/claude-1.2.0.smplugin) (60 kB), then choose **Settings → Plugins → Install from file…**.
+By hand: download [Claude 1.2.1](https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.2.1/claude-1.2.1.smplugin) (61 kB), then choose **Settings → Plugins → Install from file…**.
 
 ## About this plugin
 
@@ -42,6 +42,7 @@ SlideMage 9.1 or later.
 
 | Version | SlideMage | Released | Download |
 |---|---|---|---|
+| 1.2.1 | &gt;=0.13.31 | 2026-11-07 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.2.1/claude-1.2.1.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-claude/releases/tag/v1.2.1) |
 | 1.2.0 | &gt;=0.13.31 | 2026-11-03 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.2.0/claude-1.2.0.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-claude/releases/tag/v1.2.0) |
 | 1.0.3 | &gt;=9.1 | 2026-10-30 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.0.3/claude-1.0.3.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-claude/releases/tag/v1.0.3) |
 | 1.0.2 | &gt;=9.1 | 2026-10-30 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.0.2/claude-1.0.2.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-claude/releases/tag/v1.0.2) |
@@ -49,6 +50,12 @@ SlideMage 9.1 or later.
 | 1.0.0 | &gt;=9.1 | 2026-10-29 | [.smplugin](https://github.com/SlideMage/slidemage-plugin-claude/releases/download/v1.0.0/claude-1.0.0.smplugin) · [notes](https://github.com/SlideMage/slidemage-plugin-claude/releases/tag/v1.0.0) |
 
 ## Changelog
+
+### v1.2.1
+
+*2026-11-06 · protected parts as SlideMage defines them*
+
+The hook and Claude Code's instructions name the protected parts of a slide as the running SlideMage applies them. From SlideMage v0.14.25 those are the '%%' lines at the top of a slide and its \setSlideVersion line, and the ordinary '%' notes at the top (sources, the user's instructions) are editable; an older SlideMage protects the whole comment block there. The plugin reads which rule applies from plugin_api.protected_spans. Overlay blocks (\vbox to 0pt&#123;...&#125;) are no longer named as protected: SlideMage stopped protecting them in v9.4.0, but the message and the instructions still said so, and Claude Code avoided editing them. The hook no longer refuses an edit because the protected lines stopped being the first thing in the file, so deleting a note above them is allowed.
 
 ### v1.2.0
 
