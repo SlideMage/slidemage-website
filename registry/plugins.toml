@@ -49,6 +49,14 @@ recommended = false
 releases = "all"
 yanked = []
 
+[[plugin]]
+id = "openai-compatible"
+repository = "SlideMage/slidemage-plugin-openai-compatible"
+maintainer = "Jürgen Fleiß"
+recommended = false
+releases = "all"
+yanked = []
+
 [[citation]]
 id = "apa"
 repository = "SlideMage/slidemage-citation-apa"
