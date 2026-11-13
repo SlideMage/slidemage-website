@@ -281,5 +281,26 @@
       "sha256": "986daa73d02e656ab8cd98aad089784669437ff0564e85054923d72fd46ad0c6",
       "size": 32275
     }
+  },
+  "openai-compatible": {
+    "0.9.0": {
+      "first_seen": "2026-11-13",
+      "manifest": {
+        "api_version": 1,
+        "license": "GPL-3.0-or-later",
+        "name": "OpenAI-compatible",
+        "needs": [
+          "An API key for your chosen server, unless it runs locally without one"
+        ],
+        "network": [
+          "The OpenAI-compatible server you choose"
+        ],
+        "requires_slidemage": ">=9.1",
+        "summary": "OpenAI, Mistral, OpenRouter, LM Studio or any other OpenAI-compatible server: your key, your model."
+      },
+      "published": "2026-11-12",
+      "sha256": "ec111ad0b870d49d702542ff062339913b7301f03b0e20f746bcd6c42f74bd54",
+      "size": 25515
+    }
   }
 }

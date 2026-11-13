@@ -43,6 +43,15 @@ Plugins add features to SlideMage. SlideMage works without any of them; install 
 
     Version 0.10.2 · SlideMage &gt;=0.13.31 · by Jürgen Fleiß
 
+-   ![](openai-compatible/icon.svg){ width="40" } **[OpenAI-compatible](openai-compatible/index.md)**
+
+    OpenAI, Mistral, OpenRouter, LM Studio or any other OpenAI-compatible server: your key, your model.
+
+    **Needs:** An API key for your chosen server, unless it runs locally without one  
+    **Contacts:** The OpenAI-compatible server you choose
+
+    Version 0.9.0 · SlideMage &gt;=9.1 · by Jürgen Fleiß
+
 </div>
 <!-- catalogue:cards:end -->
 

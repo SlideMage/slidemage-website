@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated": "2026-11-08T00:39:34Z",
+  "generated": "2026-11-13T08:01:50Z",
   "plugins_page": "https://slidemage.org/plugins/",
   "plugins": [
     {
@@ -202,6 +202,35 @@
           "size": 110348,
           "published": "2026-11-03",
           "notes_url": "https://github.com/SlideMage/slidemage-plugin-exam-forge/releases/tag/v0.10.2"
+        }
+      ]
+    },
+    {
+      "id": "openai-compatible",
+      "name": "OpenAI-compatible",
+      "summary": "OpenAI, Mistral, OpenRouter, LM Studio or any other OpenAI-compatible server: your key, your model.",
+      "homepage": "https://slidemage.org/plugins/openai-compatible/",
+      "source": "https://github.com/SlideMage/slidemage-plugin-openai-compatible",
+      "icon": "https://slidemage.org/plugins/openai-compatible/icon.svg",
+      "license": "GPL-3.0-or-later",
+      "maintainer": "Jürgen Fleiß",
+      "recommended": false,
+      "needs": [
+        "An API key for your chosen server, unless it runs locally without one"
+      ],
+      "network": [
+        "The OpenAI-compatible server you choose"
+      ],
+      "releases": [
+        {
+          "version": "0.9.0",
+          "api_version": 1,
+          "requires_slidemage": ">=9.1",
+          "url": "https://github.com/SlideMage/slidemage-plugin-openai-compatible/releases/download/v0.9.0/openai-compatible-0.9.0.smplugin",
+          "sha256": "ec111ad0b870d49d702542ff062339913b7301f03b0e20f746bcd6c42f74bd54",
+          "size": 25515,
+          "published": "2026-11-12",
+          "notes_url": "https://github.com/SlideMage/slidemage-plugin-openai-compatible/releases/tag/v0.9.0"
         }
       ]
     }
