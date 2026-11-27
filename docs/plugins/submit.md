@@ -3,9 +3,8 @@
 Anyone can write a SlideMage plugin. To have it listed here and in SlideMage's own list of plugins, it
 needs a short review. This page describes what a plugin repository must look like and how the review works.
 
-!!! note "Plugin support is coming"
-    SlideMage doesn't load plugins yet. The conventions on this page are settled; the plugin API they build
-    on (`slidemage.plugin_api`) will be documented with the first SlideMage release that supports plugins.
+The plugin API (`slidemage.plugin_api`) is documented in the
+[plugin guide](https://github.com/SlideMage/SlideMage/blob/develop/docs/PLUGIN_GUIDE.md).
 
 ## The repository
 
