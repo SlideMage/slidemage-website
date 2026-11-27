@@ -5,8 +5,8 @@ SlideMage is free software for Windows and Linux. These links always give you th
 
 | | Windows | Linux |
 |---|---|---|
-| **Folder build** (starts faster) | [SlideMage-windows-folder.zip](https://github.com/SlideMage/SlideMage/releases/latest/download/SlideMage-windows-folder.zip) | [SlideMage-linux-folder.zip](https://github.com/SlideMage/SlideMage/releases/latest/download/SlideMage-linux-folder.zip) |
-| **Single file** | [SlideMage-windows.zip](https://github.com/SlideMage/SlideMage/releases/latest/download/SlideMage-windows.zip) | [SlideMage-linux.zip](https://github.com/SlideMage/SlideMage/releases/latest/download/SlideMage-linux.zip) |
+| **Folder build** (starts faster) | [Download](https://github.com/SlideMage/SlideMage/releases/latest/download/SlideMage-windows-folder.zip) | [Download](https://github.com/SlideMage/SlideMage/releases/latest/download/SlideMage-linux-folder.zip) |
+| **Single file** | [Download](https://github.com/SlideMage/SlideMage/releases/latest/download/SlideMage-windows.zip) | [Download](https://github.com/SlideMage/SlideMage/releases/latest/download/SlideMage-linux.zip) |
 
 Unzip the download and start `SlideMage`. You don't need Python. The app checks for new releases and can
 update itself.
@@ -24,11 +24,12 @@ manager.
 
 ## SlideMage Presenter
 
-A small program that presents a PDF with a presenter view, without a SlideMage project. It also runs on
-Macs with Apple silicon:
-[Windows](https://github.com/SlideMage/SlideMage/releases/latest/download/SlideMagePresenter-windows.zip),
-[Linux](https://github.com/SlideMage/SlideMage/releases/latest/download/SlideMagePresenter-linux.zip),
-[macOS](https://github.com/SlideMage/SlideMage/releases/latest/download/SlideMagePresenter-macos.zip).
+A small program that presents a PDF with a presenter view, without a SlideMage project.
+
+| | Windows | Linux | macOS (Apple silicon) |
+|---|---|---|---|
+| **SlideMage Presenter** | [Download](https://github.com/SlideMage/SlideMage/releases/latest/download/SlideMagePresenter-windows.zip) | [Download](https://github.com/SlideMage/SlideMage/releases/latest/download/SlideMagePresenter-linux.zip) | [Download](https://github.com/SlideMage/SlideMage/releases/latest/download/SlideMagePresenter-macos.zip) |
+
 The macOS app is not signed: the first time, open it with a right-click, then **Open**.
 
 ## Source code
