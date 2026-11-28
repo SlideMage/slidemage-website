@@ -35,4 +35,4 @@ Citation formats**) and chosen the same way, by their key.
 
 ---
 
-Built into SlideMage · License LPPL-1.3c-or-later · [Source](https://github.com/SlideMage/SlideMage/blob/develop/latex/SlideMage_citation_default.tex)
+Built into SlideMage · License LPPL-1.3c-or-later · [Source](https://github.com/SlideMage/SlideMage/blob/main/latex/SlideMage_citation_default.tex)
